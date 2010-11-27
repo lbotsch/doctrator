@@ -1,0 +1,4 @@
+phpunit.xml
+tests/config.php
+tests/Model/Entity/Base
+tests/Model/Repository/Base
