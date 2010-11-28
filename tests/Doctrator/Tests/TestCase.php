@@ -41,7 +41,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
             EntityManagerContainer::clearEntityManager();
 
             $configuration = new Configuration();
-            $configuration->setMetadataDriverImpl(new DoctratorDriver(__DIR__.'/../../Model/Entity'));
+            $configuration->setMetadataDriverImpl(new DoctratorDriver(__DIR__.'/../../Model'));
             $configuration->setProxyDir(__DIR__.'/../../Proxy');
             $configuration->setProxyNamespace('Proxy');
             $configuration->setAutoGenerateProxyClasses(true);

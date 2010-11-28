@@ -45,9 +45,8 @@ class Core extends Extension
     protected function setup()
     {
         $this->addOptions(array(
-            'default_entity_output'     => null,
-            'default_repository_output' => null,
-            'default_behaviors'         => array(),
+            'default_output'    => null,
+            'default_behaviors' => array(),
         ));
     }
 
@@ -130,14 +129,13 @@ class Core extends Extension
         /*
          * Classes.
          */
-        $classes['entity'] = $this->class;
+        $classes = array('entity' => $this->class);
         if (false !== $pos = strrpos($classes['entity'], '\\')) {
-            $entityNamespace     = substr($classes['entity'], 0, $pos);
-            $entityClassName     = substr($classes['entity'], $pos + 1);
-            $repositoryNamespace = substr($entityNamespace, 0, strrpos($entityNamespace, '\\'));
+            $entityNamespace = substr($classes['entity'], 0, $pos);
+            $entityClassName = substr($classes['entity'], $pos + 1);
             $classes['entity_base']     = $entityNamespace.'\\Base\\'.$entityClassName;
-            $classes['repository']      = $repositoryNamespace.'\\Repository\\'.$entityClassName;
-            $classes['repository_base'] = $repositoryNamespace.'\\Repository\\Base\\'.$entityClassName;
+            $classes['repository']      = $entityNamespace.'\\'.$entityClassName.'Repository';
+            $classes['repository_base'] = $entityNamespace.'\\Base\\'.$entityClassName.'Repository';
         } else {
             $classes['entity_base']     = 'Base'.$classes['entity'];
             $classes['repository']      = $classes['entity'].'Repository';
@@ -193,29 +191,21 @@ EOF
          * Outputs
          */
 
-        // entity
-        $dir = $this->getOption('default_entity_output');
-        if (isset($this->configClass['entity_output'])) {
-            $dir = $this->configClass['entity_output'];
+        $dir = $this->getOption('default_output');
+        if (isset($this->configClass['output'])) {
+            $dir = $this->configClass['output'];
         }
         if (!$dir) {
-            throw new \RuntimeException(sprintf('The entity of the class "%s" does not have output.', $this->class));
+            throw new \RuntimeException(sprintf('The class "%s" does not have output.', $this->class));
         }
 
+        // entity
         $this->outputs['entity'] = new Output($dir);
 
         // entity_base
         $this->outputs['entity_base'] = new Output($this->outputs['entity']->getDir().'/Base', true);
 
         // repository
-        $dir = $this->getOption('default_repository_output');
-        if (isset($this->configClass['repository_output'])) {
-            $dir = $this->configClass['repository_output'];
-        }
-        if (!$dir) {
-            throw new \RuntimeException(sprintf('The repository of the class "%s" does not have output.', $this->class));
-        }
-
         $this->outputs['repository'] = new Output($dir);
 
         // repository_base

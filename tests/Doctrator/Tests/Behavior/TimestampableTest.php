@@ -21,7 +21,7 @@
 
 namespace Doctrator\Tests\Behavior;
 
-use Model\Entity\Timestampable;
+use Model\Timestampable;
 
 class TimestampableTest extends \Doctrator\Tests\TestCase
 {

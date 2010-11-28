@@ -21,8 +21,8 @@
 
 namespace Doctrator\Tests\Behavior;
 
-use Model\Entity\Sluggable;
-use Model\Entity\SluggableUpdate;
+use Model\Sluggable;
+use Model\SluggableUpdate;
 
 class SluggableTest extends \Doctrator\Tests\TestCase
 {

@@ -21,8 +21,8 @@
 
 namespace Doctrator\Tests\Behavior;
 
-use Model\Entity\Simple;
-use Model\Entity\Sortable;
+use Model\Simple;
+use Model\Sortable;
 
 class SortableTest extends \Doctrator\Tests\TestCase
 {
@@ -215,7 +215,7 @@ class SortableTest extends \Doctrator\Tests\TestCase
 
     public function testRepositoryGetMinPosition()
     {
-        $repository = $this->entityManager->getRepository('Model\Entity\Sortable');
+        $repository = $this->entityManager->getRepository('Model\Sortable');
 
         $this->assertNull($repository->getMinPosition());
 
@@ -230,7 +230,7 @@ class SortableTest extends \Doctrator\Tests\TestCase
 
     public function testRepositoryGetMaxPosition()
     {
-        $repository = $this->entityManager->getRepository('Model\Entity\Sortable');
+        $repository = $this->entityManager->getRepository('Model\Sortable');
 
         $this->assertNull($repository->getMaxPosition());
 

@@ -21,15 +21,15 @@
 
 namespace Doctrator\Tests\Behavior;
 
-use Model\Entity\Translatable;
 use Doctrine\ORM\Query;
+use Model\Translatable;
 
 class TranslatableTest extends \Doctrator\Tests\TestCase
 {
     public function testTranslatableMapping()
     {
-        $translatable = $this->metadataFactory->getMetadataFor('Model\\Entity\\Translatable');
-        $translation  = $this->metadataFactory->getMetadataFor('Model\\Entity\\TranslatableTranslation');
+        $translatable = $this->metadataFactory->getMetadataFor('Model\Translatable');
+        $translation  = $this->metadataFactory->getMetadataFor('Model\TranslatableTranslation');
 
         $this->assertFalse(isset($translatable->fieldMappings['title']));
         $this->assertFalse(isset($translatable->fieldMappings['body']));
@@ -43,12 +43,12 @@ class TranslatableTest extends \Doctrator\Tests\TestCase
         $entity = new Translatable();
 
         $enTranslation = $entity->translation('en');
-        $this->assertInstanceOf('\\Model\\Entity\\TranslatableTranslation', $enTranslation);
+        $this->assertInstanceOf('\Model\TranslatableTranslation', $enTranslation);
         $this->assertSame($enTranslation, $entity->translation('en'));
         $this->assertSame('en', $enTranslation->getLocale());
 
         $esTranslation = $entity->translation('es');
-        $this->assertInstanceOf('\\Model\\Entity\\TranslatableTranslation', $esTranslation);
+        $this->assertInstanceOf('\Model\TranslatableTranslation', $esTranslation);
         $this->assertSame($esTranslation, $entity->translation('es'));
         $this->assertSame('es', $esTranslation->getLocale());
 
@@ -78,6 +78,6 @@ class TranslatableTest extends \Doctrator\Tests\TestCase
                     'body'   => 'spanish body',
                 ),
             ),
-        ), $this->entityManager->createQuery('SELECT t, tr FROM Model\Entity\Translatable t LEFT JOIN t.translations tr')->getSingleResult(Query::HYDRATE_ARRAY));
+        ), $this->entityManager->createQuery('SELECT t, tr FROM Model\Translatable t LEFT JOIN t.translations tr')->getSingleResult(Query::HYDRATE_ARRAY));
     }
 }

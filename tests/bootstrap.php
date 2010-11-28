@@ -24,7 +24,7 @@ use \Mondongo\Mondator\Mondator;
 use \Mondongo\Mondator\Output\Output;
 
 $configClasses = array(
-    'Model\\Entity\\Article' => array(
+    'Model\Article' => array(
         'columns' => array(
             'id'        => array('id' => 'auto', 'type' => 'integer'),
             'title'     => array('type' => 'string', 'length' => 100),
@@ -36,23 +36,23 @@ $configClasses = array(
             'date'      => 'date',
         ),
         'relations' => array(
-            'category' => array('type' => 'ManyToOne', 'targetEntity' => 'Model\\Entity\\Category'),
+            'category' => array('type' => 'ManyToOne', 'targetEntity' => 'Model\Category'),
         ),
         'indexes' => array(
             'my_slug_index'  => array('columns' => array('title_slug'), 'unique' => true),
             'is_active_date' => array('columns' => array('is_active', 'date')),
         ),
     ),
-    'Model\\Entity\\Category' => array(
+    'Model\Category' => array(
         'columns' => array(
             'id'   => array('id' => 'auto', 'type' => 'integer'),
             'name' => array('type' => 'string', 'length' => 100)
         ),
         'relations' => array(
-            'articles' => array('type' => 'OneToMany', 'targetEntity' => 'Model\\Entity\\Article', 'mappedBy' => 'category'),
+            'articles' => array('type' => 'OneToMany', 'targetEntity' => 'Model\Article', 'mappedBy' => 'category'),
         ),
     ),
-    'Model\\Entity\\Simple' => array(
+    'Model\Simple' => array(
         'columns' => array(
             'id'      => array('id' => 'auto', 'type' => 'integer'),
             'column'  => array('type' => 'string', 'length' => 255),
@@ -63,12 +63,12 @@ $configClasses = array(
     /*
      * Specific
      */
-    'Model\\Entity\\IdentifierStrategyIdentity' => array(
+    'Model\IdentifierStrategyIdentity' => array(
         'columns' => array(
             'id' => array('id' => array('strategy' => 'identity'), 'type' => 'integer'),
         ),
     ),
-    'Model\\Entity\\IdentifierStrategyNone' => array(
+    'Model\IdentifierStrategyNone' => array(
         'columns' => array(
             'id' => array('id' => array('strategy' => 'none'), 'type' => 'integer'),
         ),
@@ -76,71 +76,71 @@ $configClasses = array(
     /*
      * Behaviors
      */
-    'Model\\Entity\\Hashable' => array(
+    'Model\Hashable' => array(
         'columns' => array(
             'id'    => array('id' => 'auto', 'type' => 'integer'),
             'title' => 'string',
         ),
         'behaviors' => array(
-            array('class' => 'Doctrator\\Behavior\\Hashable'),
+            array('class' => 'Doctrator\Behavior\Hashable'),
         ),
     ),
-    'Model\\Entity\\Ipable' => array(
+    'Model\Ipable' => array(
         'columns' => array(
             'id'    => array('id' => 'auto', 'type' => 'integer'),
             'title' => 'string',
         ),
         'behaviors' => array(
-            array('class' => 'Doctrator\\Behavior\\Ipable'),
+            array('class' => 'Doctrator\Behavior\Ipable'),
         ),
     ),
-    'Model\\Entity\\Sluggable' => array(
+    'Model\Sluggable' => array(
         'columns' => array(
             'id'    => array('id' => 'auto', 'type' => 'integer'),
             'title' => 'string',
         ),
         'behaviors' => array(
-            array('class' => 'Doctrator\\Behavior\\Sluggable', 'options' => array('from_column' => 'title')),
+            array('class' => 'Doctrator\Behavior\Sluggable', 'options' => array('from_column' => 'title')),
         ),
     ),
-    'Model\\Entity\\SluggableUpdate' => array(
+    'Model\SluggableUpdate' => array(
         'columns' => array(
             'id'    => array('id' => 'auto', 'type' => 'integer'),
             'title' => 'string',
             'body'  => array('type' => 'text', 'nullable' => true),
         ),
         'behaviors' => array(
-            array('class' => 'Doctrator\\Behavior\\Sluggable', 'options' => array('from_column' => 'title', 'update' => true)),
+            array('class' => 'Doctrator\Behavior\Sluggable', 'options' => array('from_column' => 'title', 'update' => true)),
         ),
     ),
-    'Model\\Entity\\Sortable' => array(
+    'Model\Sortable' => array(
         'columns' => array(
             'id'    => array('id' => 'auto', 'type' => 'integer'),
             'title' => 'string',
         ),
         'behaviors' => array(
-            array('class' => 'Doctrator\\Behavior\\Sortable'),
+            array('class' => 'Doctrator\Behavior\Sortable'),
         ),
     ),
-    'Model\\Entity\\Taggable' => array(
+    'Model\Taggable' => array(
         'columns' => array(
             'id'    => array('id' => 'auto', 'type' => 'integer'),
             'title' => 'string',
         ),
         'behaviors' => array(
-            array('class' => 'Doctrator\\Behavior\\Taggable'),
+            array('class' => 'Doctrator\Behavior\Taggable'),
         ),
     ),
-    'Model\\Entity\\Timestampable' => array(
+    'Model\Timestampable' => array(
         'columns' => array(
             'id'    => array('id' => 'auto', 'type' => 'integer'),
             'title' => 'string',
         ),
         'behaviors' => array(
-            array('class' => 'Doctrator\\Behavior\\Timestampable'),
+            array('class' => 'Doctrator\Behavior\Timestampable'),
         ),
     ),
-    'Model\\Entity\\Translatable' => array(
+    'Model\Translatable' => array(
         'columns' => array(
             'id'        => array('id' => 'auto', 'type' => 'integer'),
             'title'     => array('type' => 'string', 'length' => 255),
@@ -149,7 +149,7 @@ $configClasses = array(
             'is_active' => array('type' => 'boolean', 'default' => true),
         ),
         'behaviors' => array(
-            array('class' => 'Doctrator\\Behavior\\Translatable', 'options' => array('columns' => array('title', 'body'))),
+            array('class' => 'Doctrator\Behavior\Translatable', 'options' => array('columns' => array('title', 'body'))),
         ),
     ),
 );
@@ -158,8 +158,7 @@ $mondator = new Mondator();
 $mondator->setConfigClasses($configClasses);
 $mondator->setExtensions(array(
     new Doctrator\Extension\Core(array(
-        'default_entity_output'     => __DIR__.'/Model/Entity',
-        'default_repository_output' => __DIR__.'/Model/Repository',
+        'default_output' => __DIR__.'/Model',
     )),
     new Doctrator\Extension\EntityDataCamelCaseMap(),
     new Doctrator\Extension\EntityArrayAccess(),

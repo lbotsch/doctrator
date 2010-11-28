@@ -21,7 +21,7 @@
 
 namespace Doctrator\Tests\Extension;
 
-use Model\Entity\Article;
+use Model\Article;
 
 class EntityDataCamelCaseMapTest extends \Doctrator\Tests\TestCase
 {

@@ -21,7 +21,7 @@
 
 namespace Doctrator\Tests\Behavior;
 
-use Model\Entity\Ipable;
+use Model\Ipable;
 
 class IpableTest extends \Doctrator\Tests\TestCase
 {

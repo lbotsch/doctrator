@@ -22,7 +22,7 @@
 namespace Doctrator\Tests\Behavior;
 
 use Doctrator\Behavior\Taggable as TaggableBehavior;
-use Model\Entity\Taggable;
+use Model\Taggable;
 
 class TaggableTest extends \Doctrator\Tests\TestCase
 {
@@ -113,7 +113,7 @@ class TaggableTest extends \Doctrator\Tests\TestCase
 
     protected function getNb()
     {
-        return $this->entityManager->createQuery('SELECT COUNT(t.id) FROM Model\Entity\TaggableTagging t')->getSingleScalarResult();
+        return $this->entityManager->createQuery('SELECT COUNT(t.id) FROM Model\TaggableTagging t')->getSingleScalarResult();
     }
 
     public function testRepositoryGetTags()

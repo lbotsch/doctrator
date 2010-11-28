@@ -21,22 +21,22 @@
 
 namespace Doctrator\Tests\Extension;
 
-use Model\Entity\Article;
-use Model\Entity\Category;
-use Model\Entity\Simple;
-use Model\Entity\IdentifierStrategyAuto;
+use Model\Article;
+use Model\Category;
+use Model\Simple;
+use Model\IdentifierStrategyAuto;
 
 class CoreTest extends \Doctrator\Tests\TestCase
 {
     public function testRepositoryClass()
     {
-        $this->assertSame('Model\\Repository\\Article', $this->metadataFactory->getMetadataFor('Model\\Entity\\Article')->customRepositoryClassName);
-        $this->assertSame('Model\\Repository\\Category', $this->metadataFactory->getMetadataFor('Model\\Entity\\Category')->customRepositoryClassName);
+        $this->assertSame('Model\ArticleRepository', $this->metadataFactory->getMetadataFor('Model\Article')->customRepositoryClassName);
+        $this->assertSame('Model\CategoryRepository', $this->metadataFactory->getMetadataFor('Model\Category')->customRepositoryClassName);
     }
 
     public function testColumnsMapping()
     {
-        $metadata      = $this->metadataFactory->getMetadataFor('Model\\Entity\\Article');
+        $metadata      = $this->metadataFactory->getMetadataFor('Model\Article');
         $fieldMappings = $metadata->fieldMappings;
 
         // id
@@ -81,22 +81,22 @@ class CoreTest extends \Doctrator\Tests\TestCase
 
     public function testIdentifierStrategyIdentity()
     {
-        $metadata = $this->metadataFactory->getMetadataFor('Model\Entity\IdentifierStrategyIdentity');
+        $metadata = $this->metadataFactory->getMetadataFor('Model\IdentifierStrategyIdentity');
 
         $this->assertTrue($metadata->isIdGeneratorIdentity());
     }
 
     public function testIdentifierStrategyNone()
     {
-        $metadata = $this->metadataFactory->getMetadataFor('Model\Entity\IdentifierStrategyNone');
+        $metadata = $this->metadataFactory->getMetadataFor('Model\IdentifierStrategyNone');
 
         $this->assertTrue($metadata->isIdentifierNatural());
     }
 
     public function testRelationsMapping()
     {
-        $articleMetadata  = $this->metadataFactory->getMetadataFor('Model\\Entity\\Article');
-        $categoryMetadata = $this->metadataFactory->getMetadataFor('Model\\Entity\\Category');
+        $articleMetadata  = $this->metadataFactory->getMetadataFor('Model\Article');
+        $categoryMetadata = $this->metadataFactory->getMetadataFor('Model\Category');
 
         $this->assertTrue(isset($articleMetadata->associationMappings['category']));
         $this->assertTrue(isset($categoryMetadata->associationMappings['articles']));
@@ -104,7 +104,7 @@ class CoreTest extends \Doctrator\Tests\TestCase
 
     public function testIndexesMapping()
     {
-        $metadata  = $this->metadataFactory->getMetadataFor('Model\\Entity\\Article');
+        $metadata  = $this->metadataFactory->getMetadataFor('Model\Article');
 
         $this->assertSame(array(
             'is_active_date' => array('columns' => array('is_active', 'date')),
@@ -230,7 +230,7 @@ class CoreTest extends \Doctrator\Tests\TestCase
     {
         $article = new Article();
 
-        $this->assertSame($this->entityManager->getRepository('Model\\Entity\\Article'), $article->getRepository());
+        $this->assertSame($this->entityManager->getRepository('Model\Article'), $article->getRepository());
     }
 
     public function testIsNew()

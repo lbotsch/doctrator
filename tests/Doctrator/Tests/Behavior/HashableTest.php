@@ -21,7 +21,7 @@
 
 namespace Doctrator\Tests\Behavior;
 
-use Model\Entity\Hashable;
+use Model\Hashable;
 
 class HashableTest extends \Doctrator\Tests\TestCase
 {
