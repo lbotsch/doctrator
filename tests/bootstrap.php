@@ -165,3 +165,16 @@ $mondator->setExtensions(array(
     new Doctrator\Extension\EntityPropertyOverloading(),
 ));
 $mondator->process();
+
+/*
+ * Not ActiveRecord
+ */
+$mondator = new Mondator();
+$mondator->setConfigClasses($configClasses);
+$mondator->setExtensions(array(
+    new Doctrator\Extension\Core(array(
+        'default_output' => __DIR__.'/ModelNotAR',
+        'active_record'  => false,
+    )),
+));
+$mondator->process();

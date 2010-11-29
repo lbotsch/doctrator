@@ -1,3 +1,4 @@
 phpunit.xml
 tests/config.php
 tests/Model/Base
+tests/ModelNotAR/Base

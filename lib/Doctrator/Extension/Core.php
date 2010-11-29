@@ -46,6 +46,7 @@ class Core extends Extension
     {
         $this->addOptions(array(
             'default_output'    => null,
+            'active_record'     => true,
             'default_behaviors' => array(),
         ));
     }
@@ -111,8 +112,16 @@ class Core extends Extension
         $this->processCheckIsNotModifiedMethod();
         $this->processGetModifiedMethod();
         $this->processRefreshMethod();
-        $this->processSaveMethod();
-        $this->processDeleteMethod();
+
+        if ($this->getOption('active_record')) {
+            $this->processActiveRecordSaveMethod();
+            $this->processActiveRecordDeleteMethod();
+        } else {
+            $this->processNotActiveRecordPersistMethod();
+            $this->processNotActiveRecordRemoveMethod();
+            $this->processNotActiveRecordSaveMethod();
+            $this->processNotActiveRecordDeleteMethod();
+        }
 
         // events methods
         $this->processEventsMethods();
@@ -1037,9 +1046,9 @@ EOF
     }
 
     /*
-     * "save" method
+     * "save" active record method
      */
-    protected function processSaveMethod()
+    protected function processActiveRecordSaveMethod()
     {
         $method = new Method('public', 'save', '', <<<EOF
         \$this->checkEntityManagerIsClear();
@@ -1061,9 +1070,9 @@ EOF
     }
 
     /*
-     * "delete" method
+     * "delete" active record method
      */
-    protected function processDeleteMethod()
+    protected function processActiveRecordDeleteMethod()
     {
         $method = new Method('public', 'delete', '', <<<EOF
         \$this->checkEntityManagerIsClear();
@@ -1077,6 +1086,86 @@ EOF
         $method->setDocComment(<<<EOF
     /**
      * Delete the entity.
+     */
+EOF
+        );
+
+        $this->definitions['entity_base']->addMethod($method);
+    }
+
+    /*
+     * "persist" not active record method
+     */
+    protected function processNotActiveRecordPersistMethod()
+    {
+        $method = new Method('public', 'persist', '', <<<EOF
+        \$this->getEntityManager()->persist(\$this);
+EOF
+        );
+        $method->setDocComment(<<<EOF
+    /**
+     * Persist the entity (the same that \$em->persist(\$entity);)
+     */
+EOF
+        );
+
+        $this->definitions['entity_base']->addMethod($method);
+    }
+
+    /*
+     * "remove" not active record method
+     */
+    protected function processNotActiveRecordRemoveMethod()
+    {
+        $method = new Method('public', 'persist', '', <<<EOF
+        \$this->getEntityManager()->remove(\$this);
+EOF
+        );
+        $method->setDocComment(<<<EOF
+    /**
+     * Remove the entity (the same that \$em->remove(\$entity);)
+     */
+EOF
+        );
+
+        $this->definitions['entity_base']->addMethod($method);
+    }
+
+    /*
+     * "save" not active record method
+     */
+    protected function processNotActiveRecordSaveMethod()
+    {
+        $method = new Method('public', 'save', '', <<<EOF
+        \$this->persist();
+EOF
+        );
+        $method->setDocComment(<<<EOF
+    /**
+     * Save the entity (equivalent to the ->persist() method)
+     *
+     * This is the not ActiveRecord implementation of Doctrator.
+     */
+EOF
+        );
+
+        $this->definitions['entity_base']->addMethod($method);
+    }
+
+    /*
+     * "delete" not active record method
+     */
+    protected function processNotActiveRecordDeleteMethod()
+    {
+        $method = new Method('public', 'delete', '', <<<EOF
+        \$this->remove();
+EOF
+        );
+        $method->setDocComment(<<<EOF
+    /**
+     * Delete the entity (equivalent to the ->remove() method)
+     *
+     * This is the not ActiveRecord implementation of Doctrator.
      */
 EOF
         );
