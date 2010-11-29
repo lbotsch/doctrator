@@ -101,7 +101,7 @@ class Core extends Extension
 
         // general methods
         $this->processGetEntityManagerMethod();
-        $this->processCheckClearEntityManagerMethod();
+        $this->processCheckEntityManagerIsClearMethod();
         $this->processGetRepositoryMethod();
         $this->processIsNewMethod();
         $this->processCheckIsNewMethod();
@@ -808,11 +808,11 @@ EOF
     }
 
     /*
-     * "checkClearEntityManager" method
+     * "checkEntityManagerIsClear" method
      */
-    protected function processCheckClearEntityManagerMethod()
+    protected function processCheckEntityManagerIsClearMethod()
     {
-        $method = new Method('public', 'checkClearEntityManager', '', <<<EOF
+        $method = new Method('public', 'checkEntityManagerIsClear', '', <<<EOF
         static \$reflection;
 
         \$unitOfWork = \$this->getEntityManager()->getUnitOfWork();
@@ -1042,7 +1042,7 @@ EOF
     protected function processSaveMethod()
     {
         $method = new Method('public', 'save', '', <<<EOF
-        \$this->checkClearEntityManager();
+        \$this->checkEntityManagerIsClear();
 
         \$em = \$this->getEntityManager();
 
@@ -1066,7 +1066,7 @@ EOF
     protected function processDeleteMethod()
     {
         $method = new Method('public', 'delete', '', <<<EOF
-        \$this->checkClearEntityManager();
+        \$this->checkEntityManagerIsClear();
 
         \$em = \$this->getEntityManager();
 

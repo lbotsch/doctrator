@@ -190,19 +190,19 @@ class CoreTest extends \Doctrator\Tests\TestCase
     /**
      * @expectedException \RuntimeException
      */
-    public function testCheckClearEntityManagerPendingInserts()
+    public function testCheckEntityManagerIsClearPendingInserts()
     {
         $simple = new Simple();
         $simple->setColumn('foo');
         $this->entityManager->persist($simple);
 
-        $simple->checkClearEntityManager();
+        $simple->checkEntityManagerIsClear();
     }
 
     /**
      * @expectedException \RuntimeException
      */
-    public function testCheckClearEntityManagerPendingUpdates()
+    public function testCheckEntityManagerIsClearPendingUpdates()
     {
         $simple = new Simple();
         $simple->setColumn('foo');
@@ -210,20 +210,20 @@ class CoreTest extends \Doctrator\Tests\TestCase
         $simple->setColumn('bar');
         $this->entityManager->persist($simple);
 
-        $simple->checkClearEntityManager();
+        $simple->checkEntityManagerIsClear();
     }
 
     /**
      * @expectedException \RuntimeException
      */
-    public function testCheckClearEntityManagerPendingDeletes()
+    public function testCheckEntityManagerIsClearPendingDeletes()
     {
         $simple = new Simple();
         $simple->setColumn('foo');
         $simple->save();
         $this->entityManager->remove($simple);
 
-        $simple->checkClearEntityManager();
+        $simple->checkEntityManagerIsClear();
     }
 
     public function testGetRepository()
