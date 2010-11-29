@@ -1,7 +1,4 @@
 Doctrator
 =========
 
-An ActiveRecord (or not) implementation with real behaviors for Doctrine2 ORM.
-
-Doctrator uses Mondator, the class generator of Mondongo, thus Doctrator is as
-flexible as you want.
+An ActiveRecord implementation (or not) with real and flexible behaviors for Doctrine2.
