@@ -86,7 +86,7 @@ class Sortable extends Extension
     protected function processEntityIsFirstMethod()
     {
         $method = new Method('public', 'isFirst', '', <<<EOF
-        return \$this->{$this->columnGetter}() === \$this->getRepository()->getMinPosition();
+        return \$this->{$this->columnGetter}() === static::repository()->getMinPosition();
 EOF
         );
         $method->setDocComment(<<<EOF
@@ -107,7 +107,7 @@ EOF
     protected function processEntityIsLastMethod()
     {
         $method = new Method('public', 'isLast', '', <<<EOF
-        return \$this->{$this->columnGetter}() === \$this->getRepository()->getMaxPosition();
+        return \$this->{$this->columnGetter}() === static::repository()->getMaxPosition();
 EOF
         );
         $method->setDocComment(<<<EOF
@@ -129,7 +129,7 @@ EOF
     {
         $method = new Method('public', 'getNext', '', <<<EOF
         \$query = 'SELECT s FROM {$this->class} s WHERE s.{$this->column} > ?1 ORDER BY s.{$this->column} ASC';
-        \$query = \$this->getEntityManager()->createQuery(\$query);
+        \$query = static::entityManager()->createQuery(\$query);
         \$query->setParameter(1, \$this->{$this->columnGetter}());
         \$query->setMaxResults(1);
 
@@ -157,7 +157,7 @@ EOF
     {
         $method = new Method('public', 'getPrevious', '', <<<EOF
         \$query = 'SELECT s FROM {$this->class} s WHERE s.{$this->column} < ?1 ORDER BY s.{$this->column} DESC';
-        \$query = \$this->getEntityManager()->createQuery(\$query);
+        \$query = static::entityManager()->createQuery(\$query);
         \$query->setParameter(1, \$this->{$this->columnGetter}());
         \$query->setMaxResults(1);
 
@@ -191,7 +191,7 @@ EOF
         \$oldPosition = \$this->{$this->columnGetter}();
         \$newPosition = \$entity->{$this->columnGetter}();
 
-        \$em = \$this->getEntityManager();
+        \$em = static::entityManager();
 
         \$em->getConnection()->beginTransaction();
 
@@ -338,12 +338,12 @@ EOF
         $positionAsNew = 'top' == $this->getOption('new_position') ? '1' : '$maxPosition + 1';
 
         $method = new Method('public', 'sortableSetPosition', '', <<<EOF
-        \$maxPosition = \$this->getRepository()->getMaxPosition();
+        \$maxPosition = static::repository()->getMaxPosition();
 
         if (\$this->isNew()) {
             \$position = $positionAsNew;
         } else {
-            \$changeSet = \$this->getEntityManager()->getUnitOfWork()->getEntityChangeSet(\$this);
+            \$changeSet = static::entityManager()->getUnitOfWork()->getEntityChangeSet(\$this);
             if (!isset(\$changeSet['position'])) {
                 return;
             }
@@ -356,12 +356,12 @@ EOF
         // move entities
         if (\$this->isNew()) {
             \$query = 'UPDATE {$this->class} s SET s.{$this->column} = s.{$this->column} + 1 WHERE s.{$this->column} >= ?1';
-            \$query = \$this->getEntityManager()->createQuery(\$query);
+            \$query = static::entityManager()->createQuery(\$query);
             \$query->setParameter(1, \$position);
         } else {
             \$sign = \$position > \$oldPosition ? '-' : '+';
             \$query = "UPDATE {$this->class} s SET s.{$this->column} = s.{$this->column} \$sign 1 WHERE s.{$this->column} BETWEEN ?1 AND ?2";
-            \$query = \$this->getEntityManager()->createQuery(\$query);
+            \$query = static::entityManager()->createQuery(\$query);
             \$query->setParameter(1, min(\$position, \$oldPosition));
             \$query->setParameter(2, max(\$position, \$oldPosition));
         }

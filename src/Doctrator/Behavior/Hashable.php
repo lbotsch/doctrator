@@ -64,7 +64,7 @@ class Hashable extends Extension
             }
             \$hash = sha1(\$hash);
 
-            \$results = \$this->getEntityManager()->createQuery("SELECT e.id FROM {$this->class} e WHERE e.$column = '\$hash'")->getArrayResult();
+            \$results = static::entityManager()->createQuery("SELECT e.id FROM {$this->class} e WHERE e.$column = '\$hash'")->getArrayResult();
         } while (\$results);
 
         \$this->$columnSetter(\$hash);

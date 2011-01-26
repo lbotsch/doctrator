@@ -130,7 +130,7 @@ class TaggableTest extends \Doctrator\Tests\TestCase
         $entity2->setTags('foo, foobar, barfoo');
         $entity2->saveTags();
 
-        $this->assertSame(array('foo', 'bar', 'foobar', 'barfoo'), $entity1->getRepository()->getTags());
+        $this->assertSame(array('foo', 'bar', 'foobar', 'barfoo'), Taggable::repository()->getTags());
     }
 
     public function testRepositoryGetTagsWithCount()
@@ -154,13 +154,13 @@ class TaggableTest extends \Doctrator\Tests\TestCase
             'bar'    => '4',
             'foobar' => '2',
             'barfoo' => '1',
-        ), $entity->getRepository()->getTagsWithCount());
+        ), Taggable::repository()->getTagsWithCount());
 
         $this->assertSame(array(
             'foo'    => '4',
             'bar'    => '4',
             'foobar' => '2',
-        ), $entity->getRepository()->getTagsWithCount(3));
+        ), Taggable::repository()->getTagsWithCount(3));
     }
 
     public function testExplodeTags()

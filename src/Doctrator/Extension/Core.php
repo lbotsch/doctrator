@@ -101,9 +101,9 @@ class Core extends Extension
         $this->processToArrayMethod();
 
         // general methods
-        $this->processGetEntityManagerMethod();
+        $this->processEntityManagerMethod();
         $this->processCheckEntityManagerIsClearMethod();
-        $this->processGetRepositoryMethod();
+        $this->processRepositoryMethod();
         $this->processIsNewMethod();
         $this->processCheckIsNewMethod();
         $this->processCheckIsNotNewMethod();
@@ -796,14 +796,15 @@ EOF
     }
 
     /*
-     * "getEntityManager" method
+     * "entityManager" method
      */
-    protected function processGetEntityManagerMethod()
+    protected function processEntityManagerMethod()
     {
-        $method = new Method('public', 'getEntityManager', '', <<<EOF
+        $method = new Method('public', 'entityManager', '', <<<EOF
         return \Doctrator\EntityManagerContainer::getEntityManager();
 EOF
         );
+        $method->setIsStatic(true);
         $method->setDocComment(<<<EOF
     /**
      * Returns the entity manager.
@@ -824,7 +825,7 @@ EOF
         $method = new Method('public', 'checkEntityManagerIsClear', '', <<<EOF
         static \$reflection;
 
-        \$unitOfWork = \$this->getEntityManager()->getUnitOfWork();
+        \$unitOfWork = static::entityManager()->getUnitOfWork();
 
         if (null === \$reflection) {
             \$reflection = new \ReflectionProperty(get_class(\$unitOfWork), 'scheduledForDirtyCheck');
@@ -851,14 +852,15 @@ EOF
     }
 
     /*
-     * "getRepository" method
+     * "repository" method
      */
-    protected function processGetRepositoryMethod()
+    protected function processRepositoryMethod()
     {
-        $method = new Method('public', 'getRepository', '', <<<EOF
-        return \$this->getEntityManager()->getRepository('{$this->class}');
+        $method = new Method('public', 'repository', '', <<<EOF
+        return static::entityManager()->getRepository('{$this->class}');
 EOF
         );
+        $method->setIsStatic(true);
         $method->setDocComment(<<<EOF
     /**
      * Returns the repository.
@@ -877,7 +879,7 @@ EOF
     protected function processIsNewMethod()
     {
         $method = new Method('public', 'isNew', '', <<<EOF
-        return !\$this->getEntityManager()->getUnitOfWork()->isInIdentityMap(\$this);
+        return !static::entityManager()->getUnitOfWork()->isInIdentityMap(\$this);
 EOF
         );
         $method->setDocComment(<<<EOF
@@ -1007,7 +1009,7 @@ EOF
             return array();
         }
 
-        \$originalData = \$this->getEntityManager()->getUnitOfWork()->getOriginalEntityData(\$this);
+        \$originalData = static::entityManager()->getUnitOfWork()->getOriginalEntityData(\$this);
 
         return array_diff(\$originalData, \$this->toArray());
 EOF
@@ -1030,7 +1032,7 @@ EOF
     protected function processRefreshMethod()
     {
         $method = new Method('public', 'refresh', '', <<<EOF
-        \$this->getEntityManager()->getUnitOfWork()->refresh(\$this);
+        static::entityManager()->getUnitOfWork()->refresh(\$this);
 EOF
         );
         $method->setDocComment(<<<EOF
@@ -1053,7 +1055,7 @@ EOF
         $method = new Method('public', 'save', '', <<<EOF
         \$this->checkEntityManagerIsClear();
 
-        \$em = \$this->getEntityManager();
+        \$em = static::entityManager();
 
         \$em->persist(\$this);
         \$em->flush();
@@ -1077,7 +1079,7 @@ EOF
         $method = new Method('public', 'delete', '', <<<EOF
         \$this->checkEntityManagerIsClear();
 
-        \$em = \$this->getEntityManager();
+        \$em = static::entityManager();
 
         \$em->remove(\$this);
         \$em->flush();
@@ -1099,7 +1101,7 @@ EOF
     protected function processNotActiveRecordPersistMethod()
     {
         $method = new Method('public', 'persist', '', <<<EOF
-        \$this->getEntityManager()->persist(\$this);
+        static::entityManager()->persist(\$this);
 EOF
         );
         $method->setDocComment(<<<EOF
@@ -1118,7 +1120,7 @@ EOF
     protected function processNotActiveRecordRemoveMethod()
     {
         $method = new Method('public', 'persist', '', <<<EOF
-        \$this->getEntityManager()->remove(\$this);
+        static::entityManager()->remove(\$this);
 EOF
         );
         $method->setDocComment(<<<EOF

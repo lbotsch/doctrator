@@ -78,7 +78,7 @@ class Sluggable extends Extension
             $uniqueCode = <<<EOF
         \$similarSlugs = array();
 
-        \$query = \$this->getEntityManager()->createQuery("SELECT e.id, e.$slugColumn FROM {$this->class} e WHERE e.$slugColumn LIKE ?1");
+        \$query = static::entityManager()->createQuery("SELECT e.id, e.$slugColumn FROM {$this->class} e WHERE e.$slugColumn LIKE ?1");
         \$query->setParameter(1, '%'.\$slug);
         foreach (\$query->getArrayResult() as \$result) {
             if (\$this->getId() == \$result['id']) {

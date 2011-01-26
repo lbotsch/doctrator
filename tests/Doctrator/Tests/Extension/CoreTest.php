@@ -180,11 +180,9 @@ class CoreTest extends \Doctrator\Tests\TestCase
         $article->get('no');
     }
 
-    public function testGetEntityManager()
+    public function testEntityManager()
     {
-        $article = new Article();
-
-        $this->assertSame($this->entityManager, $article->getEntityManager());
+        $this->assertSame($this->entityManager, Article::entityManager());
     }
 
     /**
@@ -226,11 +224,9 @@ class CoreTest extends \Doctrator\Tests\TestCase
         $simple->checkEntityManagerIsClear();
     }
 
-    public function testGetRepository()
+    public function testRepository()
     {
-        $article = new Article();
-
-        $this->assertSame($this->entityManager->getRepository('Model\Article'), $article->getRepository());
+        $this->assertSame($this->entityManager->getRepository('Model\Article'), Article::repository());
     }
 
     public function testIsNew()

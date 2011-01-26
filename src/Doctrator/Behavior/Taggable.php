@@ -182,7 +182,7 @@ EOF
         if (null === \$holder['saved']) {
             \$holder['saved'] = array();
 
-            \$query = \$this->getEntityManager()->createQuery('SELECT t, ta FROM {$this->class}Tagging t JOIN t.tag ta WHERE t.parent_id = ?1');
+            \$query = static::entityManager()->createQuery('SELECT t, ta FROM {$this->class}Tagging t JOIN t.tag ta WHERE t.parent_id = ?1');
             \$query->setParameter(1, \$this->getId());
             foreach (\$query->getResult() as \$tagging) {
                 \$holder['saved'][] = \$tagging->getTag()->getName();
@@ -287,7 +287,7 @@ EOF
         \$holder = \$this->getTagHolder();
 
         foreach (\$holder['add'] as \$tag) {
-            \$query = \$this->getEntityManager()->createQuery('SELECT t FROM {$this->class}Tag t WHERE t.name = ?1');
+            \$query = static::entityManager()->createQuery('SELECT t FROM {$this->class}Tag t WHERE t.name = ?1');
             \$query->setParameter(1, \$tag);
             if (\$results = \$query->getResult()) {
                 \$tagEntity = \$results[0];
@@ -304,10 +304,10 @@ EOF
         }
 
         foreach (\$holder['remove'] as \$tag) {
-            \$query = \$this->getEntityManager()->createQuery('SELECT t FROM {$this->class}Tag t WHERE t.name = ?1');
+            \$query = static::entityManager()->createQuery('SELECT t FROM {$this->class}Tag t WHERE t.name = ?1');
             \$query->setParameter(1, \$tag);
             if (\$results = \$query->getResult()) {
-                \$query = \$this->getEntityManager()->createQuery('DELETE FROM {$this->class}Tagging t WHERE t.parent_id = ?1 AND t.tag_id = ?2');
+                \$query = static::entityManager()->createQuery('DELETE FROM {$this->class}Tagging t WHERE t.parent_id = ?1 AND t.tag_id = ?2');
                 \$query->setMaxResults(1);
                 \$query->setParameter(1, \$this->getId());
                 \$query->setParameter(2, \$results[0]->getId());
