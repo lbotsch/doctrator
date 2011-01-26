@@ -104,6 +104,7 @@ class Core extends Extension
         $this->processEntityManagerMethod();
         $this->processCheckEntityManagerIsClearMethod();
         $this->processRepositoryMethod();
+        $this->processQueryBuilderMethod();
         $this->processIsNewMethod();
         $this->processCheckIsNewMethod();
         $this->processCheckIsNotNewMethod();
@@ -866,6 +867,30 @@ EOF
      * Returns the repository.
      *
      * @return \Doctrine\ORM\EntityRepository The repository.
+     */
+EOF
+        );
+
+        $this->definitions['entity_base']->addMethod($method);
+    }
+
+    /*
+     * "queryBuilder" method
+     */
+    protected function processQueryBuilderMethod()
+    {
+        $method = new Method('public', 'queryBuilder', '$alias', <<<EOF
+        return static::repository()->createQueryBuilder(\$alias);
+EOF
+        );
+        $method->setIsStatic(true);
+        $method->setDocComment(<<<EOF
+    /**
+     * Create a query builder for this entity name.
+     *
+     * @param string \$alias The alias.
+     *
+     * @return \Doctrine\ORM\QueryBuilder A query builder
      */
 EOF
         );

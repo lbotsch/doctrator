@@ -229,6 +229,11 @@ class CoreTest extends \Doctrator\Tests\TestCase
         $this->assertSame($this->entityManager->getRepository('Model\Article'), Article::repository());
     }
 
+    public function testQueryBuilder()
+    {
+        $this->assertEquals(Article::repository()->createQueryBuilder('alias'), Article::queryBuilder('alias'));
+    }
+
     public function testIsNew()
     {
         $simple = new Simple();
