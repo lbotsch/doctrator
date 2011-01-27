@@ -21,7 +21,7 @@
 
 namespace Doctrator\Behavior;
 
-use Mondongo\Mondator\Extension;
+use Mondongo\Mondator\ClassExtension;
 use Mondongo\Mondator\Definition\Method;
 
 /**
@@ -30,7 +30,7 @@ use Mondongo\Mondator\Definition\Method;
  * @package Doctrator
  * @author  Pablo Díez Pascual <pablodip@gmail.com>
  */
-class Translatable extends Extension
+class Translatable extends ClassExtension
 {
     /**
      * @inheritdoc
@@ -43,8 +43,10 @@ class Translatable extends Extension
     /**
      * @inheritdoc
      */
-    protected function doProcess()
+    public function getNewConfigClasses($class, \ArrayObject $configClass)
     {
+        $newConfigClasses = array();
+
         // %class%Translation
         $translationConfigClass = array(
             'columns' => array(
@@ -52,30 +54,38 @@ class Translatable extends Extension
                 'locale' => array('type' => 'string', 'length' => 7),
             ),
             'relations' => array(
-                'parent' => array('type' => 'ManyToOne', 'targetEntity' => $this->class, 'inversedBy' => 'translations'),
+                'parent' => array('type' => 'ManyToOne', 'targetEntity' => $class, 'inversedBy' => 'translations'),
             ),
         );
 
-        $configClassColumns = $this->configClass['columns'];
+        $configClassColumns = $configClass['columns'];
         foreach ($this->getOption('columns') as $column) {
             if (!isset($configClassColumns[$column])) {
-                throw new \RuntimeException(sprintf('The column "%s" of the class "%s" does not exists.', $column, $this->class));
+                throw new \RuntimeException(sprintf('The column "%s" of the class "%s" does not exists.', $column, $class));
             }
             $translationConfigClass['columns'][$column] = $configClassColumns[$column];
 
             unset($configClassColumns[$column]);
         }
-        $this->configClass['columns'] = $configClassColumns;
+        $configClass['columns'] = $configClassColumns;
 
-        $this->newConfigClasses[$this->class.'Translation'] = $translationConfigClass;
+        $newConfigClasses[$class.'Translation'] = $translationConfigClass;
 
         // relation
-        $this->configClass['relations']['translations'] = array(
+        $configClass['relations']['translations'] = array(
             'type'         => 'OneToMany',
-            'targetEntity' => $this->class.'Translation',
+            'targetEntity' => $class.'Translation',
             'mappedBy'     => 'parent',
         );
 
+        return $newConfigClasses;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function doClassProcess()
+    {
         // "translation" method
         $method = new Method('public', 'translation', '$locale', <<<EOF
         foreach (\$this->getTranslations() as \$translation) {

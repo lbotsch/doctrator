@@ -21,7 +21,7 @@
 
 namespace Doctrator\Behavior;
 
-use Mondongo\Mondator\Extension;
+use Mondongo\Mondator\ClassExtension;
 use Mondongo\Mondator\Definition\Method;
 use Mondongo\Inflector;
 
@@ -31,7 +31,7 @@ use Mondongo\Inflector;
  * @package Doctrator
  * @author  Pablo Díez Pascual <pablodip@gmail.com>
  */
-class Sluggable extends Extension
+class Sluggable extends ClassExtension
 {
     /**
      * @inheritdoc
@@ -51,7 +51,7 @@ class Sluggable extends Extension
     /**
      * @inheritdoc
      */
-    protected function doProcess()
+    protected function doClassProcess()
     {
         $fromColumn = $this->getOption('from_column');
         $slugColumn = $this->getOption('slug_column');

@@ -21,7 +21,7 @@
 
 namespace Doctrator\Behavior;
 
-use Mondongo\Mondator\Extension;
+use Mondongo\Mondator\ClassExtension;
 use Mondongo\Mondator\Definition\Method;
 use Mondongo\Inflector;
 
@@ -31,35 +31,44 @@ use Mondongo\Inflector;
  * @package Doctrator
  * @author  Pablo Díez Pascual <pablodip@gmail.com>
  */
-class Taggable extends Extension
+class Taggable extends ClassExtension
 {
     /**
      * @inheritdoc
      */
-    protected function doProcess()
+    public function getNewConfigClasses($class, \ArrayObject $configClass)
     {
-        // tag classes
-        $this->newConfigClasses[$this->class.'Tag'] = array(
+        $newConfigClasses = array();
+
+        $newConfigClasses[$class.'Tag'] = array(
             'columns' => array(
                 'id'   => array('id' => 'auto', 'type' => 'integer'),
                 'name' => array('type' => 'string', 'unique' => true),
             ),
         );
-        $this->newConfigClasses[$this->class.'Tagging'] = array(
+        $newConfigClasses[$class.'Tagging'] = array(
             'columns' => array(
                 'id'        => array('id' => 'auto', 'type' => 'integer'),
                 'parent_id' => array('type' => 'integer'),
                 'tag_id'    => array('type' => 'integer'),
             ),
             'relations' => array(
-                'parent' => array('type' => 'ManyToOne', 'targetEntity' => $this->class),
-                'tag'    => array('type' => 'ManyToOne', 'targetEntity' => $this->class.'Tag'),
+                'parent' => array('type' => 'ManyToOne', 'targetEntity' => $class),
+                'tag'    => array('type' => 'ManyToOne', 'targetEntity' => $class.'Tag'),
             ),
             'indexes' => array(
                 array('columns' => array('parent_id', 'tag_id'), 'unique' => true),
             ),
         );
 
+        return $newConfigClasses;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function doClassProcess()
+    {
         // method
         $this->processAddTagsMethod();
         $this->processRemoveTagsMethod();

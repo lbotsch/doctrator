@@ -37,7 +37,7 @@ class EntityPropertyOverloading extends Extension
     /**
      * @inheritdoc
      */
-    protected function doProcess()
+    protected function doClassProcess()
     {
         $this->process__setMethod();
         $this->process__getMethod();

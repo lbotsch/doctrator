@@ -37,7 +37,7 @@ use Mondongo\Inflector;
  */
 class Core extends Extension
 {
-    protected $loadMetadataCode;
+    protected $loadMetadataCode = array();
 
     /**
      * @inheritdoc
@@ -54,26 +54,44 @@ class Core extends Extension
     /**
      * @inheritdoc
      */
-    protected function doProcess()
+    public function getNewClassExtensions($class, \ArrayObject $configClass)
     {
-        $this->loadMetadataCode = array();
+        $classExtensions = array();
+
+        // default behaviors
+        foreach ($this->getOption('default_behaviors') as $behavior) {
+            $classExtensions[] = $this->createClassExtensionFromArray($behavior);
+        }
+
+        // behaviors
+        if (isset($configClass['behaviors'])) {
+            foreach ($configClass['behaviors'] as $behavior) {
+                $classExtensions[] = $this->createClassExtensionFromArray($behavior);
+            }
+        }
+
+        return $classExtensions;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function doClassProcess()
+    {
+        $this->loadMetadataCode[$this->class] = array();
 
         // definitions and outputs
         $this->processInitDefinitionsAndOutputs();
 
         // init mapping
         $this->initMapping();
+    }
 
-        // default behaviors
-        foreach ($this->getOption('default_behaviors') as $behavior) {
-            $this->processExtensionsFromArray(array($behavior));
-        }
-
-        // behaviors
-        if (isset($this->configClass['behaviors'])) {
-            $this->processExtensionsFromArray($this->configClass['behaviors']);
-        }
-
+    /**
+     * @inheritdoc
+     */
+    protected function doReverseClassProcess()
+    {
         // mapping
         $this->processChangeTrackingPolicyMapping();
         $this->processTableNameMapping();
@@ -265,7 +283,7 @@ EOF
      */
     protected function processChangeTrackingPolicyMapping()
     {
-        $this->loadMetadataCode[] = <<<EOF
+        $this->loadMetadataCode[$this->class][] = <<<EOF
         \$metadata->setChangeTrackingPolicy(\Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT);
 EOF;
     }
@@ -276,7 +294,7 @@ EOF;
     protected function processTableNameMapping()
     {
         if ($this->configClass['table']) {
-            $this->loadMetadataCode[] = <<<EOF
+            $this->loadMetadataCode[$this->class][] = <<<EOF
         \$metadata->setTableName('{$this->configClass['table']}');
 EOF;
         }
@@ -289,7 +307,7 @@ EOF;
     {
         $repositoryClass = $this->definitions['repository']->getClass();
 
-        $this->loadMetadataCode[] = <<<EOF
+        $this->loadMetadataCode[$this->class][] = <<<EOF
         \$metadata->setCustomRepositoryClass('$repositoryClass');
 EOF;
     }
@@ -354,7 +372,7 @@ EOF;
 
                 // strategy
                 $strategyUpper = strtoupper($column['id']['strategy']);
-                $this->loadMetadataCode[] = <<<EOF
+                $this->loadMetadataCode[$this->class][] = <<<EOF
         \$metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_$strategyUpper);
 EOF
                 ;
@@ -378,7 +396,7 @@ EOF
 
                     $sequenceMapping = Dumper::exportArray($sequenceMapping, 12);
 
-                    $this->loadMetadataCode[] = <<<EOF
+                    $this->loadMetadataCode[$this->class][] = <<<EOF
         \$metadata->setSequenceGeneratorDefinition($sequenceMapping);
 EOF;
                 }
@@ -387,7 +405,7 @@ EOF;
             // map field
             $fieldMapping = Dumper::exportArray($fieldMapping, 12);
 
-            $this->loadMetadataCode[] = <<<EOF
+            $this->loadMetadataCode[$this->class][] = <<<EOF
         \$metadata->mapField($fieldMapping);
 EOF;
 
@@ -523,7 +541,7 @@ EOF
 
             $mapping = Dumper::exportArray($mapping, 12);
 
-            $this->loadMetadataCode[] = <<<EOF
+            $this->loadMetadataCode[$this->class][] = <<<EOF
         \$metadata->map{$relation['type']}($mapping);
 EOF;
 
@@ -543,7 +561,7 @@ EOF;
             $indexType    = isset($index['unique']) && $index['unique'] ? 'uniqueConstraints' : 'indexes';
             $indexMapping = Dumper::exportArray(array('columns' => $index['columns']), 12);
 
-            $this->loadMetadataCode[] = <<<EOF
+            $this->loadMetadataCode[$this->class][] = <<<EOF
         \$metadata->table['$indexType']['$name'] = $indexMapping;
 EOF;
         }
@@ -556,7 +574,7 @@ EOF;
     {
         if ($this->configClass['events']) {
             $events = Dumper::exportArray($this->configClass['events'], 12);
-            $this->loadMetadataCode[] = <<<EOF
+            $this->loadMetadataCode[$this->class][] = <<<EOF
         \$metadata->setLifecycleCallbacks($events);
 EOF;
         }
@@ -1223,7 +1241,7 @@ EOF
      */
     protected function processLoadMetadataMethod()
     {
-        $method = new Method('public', 'loadMetadata', '\\Doctrine\\ORM\\Mapping\\ClassMetadata $metadata', implode("\n", $this->loadMetadataCode));
+        $method = new Method('public', 'loadMetadata', '\\Doctrine\\ORM\\Mapping\\ClassMetadata $metadata', implode("\n", $this->loadMetadataCode[$this->class]));
         $method->setIsStatic(true);
         $method->setDocComment(<<<EOF
     /**

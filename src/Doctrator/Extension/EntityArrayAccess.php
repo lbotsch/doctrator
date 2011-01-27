@@ -37,7 +37,7 @@ class EntityArrayAccess extends Extension
     /**
      * @inheritdoc
      */
-    protected function doProcess()
+    protected function doClassProcess()
     {
         $this->definitions['entity_base']->addInterface('\ArrayAccess');
 

@@ -21,7 +21,7 @@
 
 namespace Doctrator\Behavior;
 
-use Mondongo\Mondator\Extension;
+use Mondongo\Mondator\ClassExtension;
 use Mondongo\Mondator\Definition\Method;
 use Mondongo\Inflector;
 
@@ -31,7 +31,7 @@ use Mondongo\Inflector;
  * @package Doctrator
  * @author  Pablo Díez Pascual <pablodip@gmail.com>
  */
-class Sortable extends Extension
+class Sortable extends ClassExtension
 {
     protected $column;
     protected $columnSetter;
@@ -51,7 +51,7 @@ class Sortable extends Extension
     /**
      * @inheritdoc
      */
-    protected function doProcess()
+    protected function doClassProcess()
     {
         // new position
         if (!in_array($this->getOption('new_position'), array('top', 'bottom'))) {
