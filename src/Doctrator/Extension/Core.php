@@ -679,7 +679,7 @@ EOF;
             $getter = 'get'.Inflector::camelize($name);
             $code .= <<<EOF
         if ('$name' == \$name) {
-            return \$this->$getter(\$value);
+            return \$this->$getter();
         }
 
 EOF;
@@ -753,10 +753,34 @@ EOF
 EOF;
         }
 
+        // associations
+        foreach ($this->mergeAssociations() as $name => $association) {
+            if (isset($association['mapped'])) {
+                continue;
+            }
+
+            if (in_array($association['type'], array('one_to_one', 'many_to_one'))) {
+                $gets[] = <<<EOF
+        if (\$withAssociations) {
+            \$array['$name'] = \$this->get('$name') ? \$this->get('$name')->toArray(\$withAssociations) : null;
+        }
+EOF;
+            } else {
+                $gets[] = <<<EOF
+        if (\$withAssociations) {
+            \$array['$name'] = array();
+            foreach (\$this->get('$name') as \$key => \$value) {
+                \$array['$name'][\$key] = \$value->toArray(\$withAssociations);
+            }
+        }
+EOF;
+            }
+        }
+
         $gets = implode("\n", $gets);
 
         // method
-        $method = new Method('public', 'toArray', '', <<<EOF
+        $method = new Method('public', 'toArray', '$withAssociations = true', <<<EOF
         \$array = array();
 
 $gets

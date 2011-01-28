@@ -59,7 +59,48 @@ $configClasses = array(
             'column2' => array('type' => 'string', 'length' => 255, 'nullable' => true),
         ),
     ),
-
+    /*
+     * One
+     */
+    'Model\Student' => array(
+        'columns' => array(
+            'id'   => array('id' => 'auto', 'type' => 'integer'),
+            'name' => array('type' => 'string', 'length' => 255),
+        ),
+        'many_to_one' => array(
+            'school' => array('class' => 'Model\School', 'inversed' => 'students'),
+        ),
+    ),
+    'Model\School' => array(
+        'columns' => array(
+            'id'   => array('id' => 'auto', 'type' => 'integer'),
+            'name' => array('type' => 'string', 'length' => 255),
+        ),
+        'many_to_one' => array(
+            'students' => array('class' => 'Model\Student', 'mapped' => 'school'),
+        ),
+    ),
+    /*
+     * Many
+     */
+    'Model\Person' => array(
+        'columns' => array(
+            'id'   => array('id' => 'auto', 'type' => 'integer'),
+            'name' => array('type' => 'string', 'length' => 255),
+        ),
+        'many_to_many' => array(
+            'likings' => array('class' => 'Model\Liking', 'inversed' => 'persons'),
+        ),
+    ),
+    'Model\Liking' => array(
+        'columns' => array(
+            'id'   => array('id' => 'auto', 'type' => 'integer'),
+            'name' => array('type' => 'string', 'length' => 255),
+        ),
+        'many_to_many' => array(
+            'persons' => array('class' => 'Model\Person', 'mapped' => 'likings'),
+        ),
+    ),
     /*
      * Specific
      */

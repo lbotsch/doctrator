@@ -207,7 +207,86 @@ class CoreTest extends \Doctrator\Tests\TestCase
             'is_active' => true,
             'score'     => null,
             'date'      => null,
+            'category'  => null,
         ), $article->toArray());
+    }
+
+    public function testToArrayWithAssociationsOne()
+    {
+        $school = new \Model\School();
+        $school->setName('foo');
+        $school->save();
+
+        $student = new \Model\Student();
+        $student->setName('bar');
+        $student->save();
+
+        $this->assertSame(array(
+            'id'     => $student->getId(),
+            'name'   => $student->getName(),
+            'school' => null,
+        ), $student->toArray());
+
+        $this->assertSame(array(
+            'id'     => $student->getId(),
+            'name'   => $student->getName(),
+        ), $student->toArray(false));
+
+        $student->setSchool($school);
+
+        $this->assertSame(array(
+            'id'     => $student->getId(),
+            'name'   => $student->getName(),
+            'school' => $school->toArray(),
+        ), $student->toArray());
+
+        $this->assertSame(array(
+            'id'     => $student->getId(),
+            'name'   => $student->getName(),
+        ), $student->toArray(false));
+    }
+
+    public function testToArrayWithAssociationsMany()
+    {
+        $person = new \Model\Person();
+        $person->setName('foo');
+        $person->save();
+
+        $this->assertSame(array(
+            'id'   => $person->getId(),
+            'name' => $person->getName(),
+            'likings' => array(),
+        ), $person->toArray());
+
+        $this->assertSame(array(
+            'id'   => $person->getId(),
+            'name' => $person->getName(),
+        ), $person->toArray(false));
+
+        $likings = array();
+        $likings[1] = new \Model\Liking();
+        $likings[1]->setName('Liking1');
+        $likings[1]->save();
+        $likings[2] = new \Model\Liking();
+        $likings[2]->setName('Liking1');
+        $likings[2]->save();
+
+        $person->getLikings()->add($likings[1]);
+        $person->getLikings()->add($likings[2]);
+
+        $this->assertSame(array(
+            'id'   => $person->getId(),
+            'name' => $person->getName(),
+            'likings' => array(
+                0 => $likings[1]->toArray(),
+                1 => $likings[2]->toArray(),
+            ),
+        ), $person->toArray());
+
+        $this->assertSame(array(
+            'id'   => $person->getId(),
+            'name' => $person->getName(),
+        ), $person->toArray(false));
     }
 
     public function testEntityManager()
