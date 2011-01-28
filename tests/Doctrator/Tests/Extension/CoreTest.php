@@ -180,6 +180,36 @@ class CoreTest extends \Doctrator\Tests\TestCase
         $article->get('no');
     }
 
+    public function testFromArray()
+    {
+        $article = new Article();
+        $article->fromArray(array(
+            'title'   => 'foo',
+            'content' => 'bar',
+        ));
+
+        $this->assertSame('foo', $article->getTitle());
+        $this->assertSame('bar', $article->getContent());
+    }
+
+    public function testToArray()
+    {
+        $article = new Article();
+        $article->setTitle('foo');
+        $article->setContent('bar');
+
+        $this->assertSame(array(
+            'id'      => null,
+            'title'   => 'foo',
+            'slug'    => null,
+            'content' => 'bar',
+            'source'  => null,
+            'is_active' => true,
+            'score'     => null,
+            'date'      => null,
+        ), $article->toArray());
+    }
+
     public function testEntityManager()
     {
         $this->assertSame($this->entityManager, Article::entityManager());

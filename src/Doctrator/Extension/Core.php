@@ -748,9 +748,8 @@ EOF
 
         // columns
         foreach ($this->configClass['columns'] as $name => $column) {
-            $getter = 'get'.Inflector::camelize($name);
             $gets[] = <<<EOF
-        \$array['$name'] = \$this->$getter();
+        \$array['$name'] = \$this->get('$name');
 EOF;
         }
 
