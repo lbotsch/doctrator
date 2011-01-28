@@ -36,32 +36,28 @@ class Taggable extends ClassExtension
     /**
      * @inheritdoc
      */
-    public function getNewConfigClasses($class, \ArrayObject $configClass)
+    protected function doNewConfigClassesProcess()
     {
-        $newConfigClasses = array();
-
-        $newConfigClasses[$class.'Tag'] = array(
+        $this->newConfigClasses[$this->class.'Tag'] = array(
             'columns' => array(
                 'id'   => array('id' => 'auto', 'type' => 'integer'),
                 'name' => array('type' => 'string', 'unique' => true),
             ),
         );
-        $newConfigClasses[$class.'Tagging'] = array(
+        $this->newConfigClasses[$this->class.'Tagging'] = array(
             'columns' => array(
                 'id'        => array('id' => 'auto', 'type' => 'integer'),
                 'parent_id' => array('type' => 'integer'),
                 'tag_id'    => array('type' => 'integer'),
             ),
             'relations' => array(
-                'parent' => array('type' => 'ManyToOne', 'targetEntity' => $class),
-                'tag'    => array('type' => 'ManyToOne', 'targetEntity' => $class.'Tag'),
+                'parent' => array('type' => 'ManyToOne', 'targetEntity' => $this->class),
+                'tag'    => array('type' => 'ManyToOne', 'targetEntity' => $this->class.'Tag'),
             ),
             'indexes' => array(
                 array('columns' => array('parent_id', 'tag_id'), 'unique' => true),
             ),
         );
-
-        return $newConfigClasses;
     }
 
     /**

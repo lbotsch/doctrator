@@ -54,23 +54,28 @@ class Core extends Extension
     /**
      * @inheritdoc
      */
-    public function getNewClassExtensions($class, \ArrayObject $configClass)
+    protected function doNewClassExtensionsProcess()
     {
-        $classExtensions = array();
-
         // default behaviors
         foreach ($this->getOption('default_behaviors') as $behavior) {
-            $classExtensions[] = $this->createClassExtensionFromArray($behavior);
+            $this->newClassExtensions[] = $this->createClassExtensionFromArray($behavior);
         }
 
         // behaviors
-        if (isset($configClass['behaviors'])) {
-            foreach ($configClass['behaviors'] as $behavior) {
-                $classExtensions[] = $this->createClassExtensionFromArray($behavior);
+        if (isset($this->configClass['behaviors'])) {
+            foreach ($this->configClass['behaviors'] as $behavior) {
+                $this->newClassExtensions[] = $this->createClassExtensionFromArray($behavior);
             }
         }
+    }
 
-        return $classExtensions;
+    /**
+     * @inheritdoc
+     */
+    protected function doConfigClassProcess()
+    {
+        // init mapping
+        $this->initMapping();
     }
 
     /**
@@ -83,15 +88,6 @@ class Core extends Extension
         // definitions and outputs
         $this->processInitDefinitionsAndOutputs();
 
-        // init mapping
-        $this->initMapping();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function doReverseClassProcess()
-    {
         // mapping
         $this->processChangeTrackingPolicyMapping();
         $this->processTableNameMapping();

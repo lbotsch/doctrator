@@ -51,17 +51,30 @@ class Sluggable extends ClassExtension
     /**
      * @inheritdoc
      */
-    protected function doClassProcess()
+    protected function doConfigClassProcess()
     {
-        $fromColumn = $this->getOption('from_column');
         $slugColumn = $this->getOption('slug_column');
 
-        // column mapping
         $this->configClass['columns'][$slugColumn] = array(
             'type'   => 'string',
             'length' => 255,
             'unique' => $this->getOption('unique'),
         );
+
+        // events
+        $this->configClass['events']['prePersist'][] = 'updateSluggableSlug';
+        if ($this->getOption('update')) {
+            $this->configClass['events']['preUpdate'][] = 'updateSluggableSlug';
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function doClassProcess()
+    {
+        $fromColumn = $this->getOption('from_column');
+        $slugColumn = $this->getOption('slug_column');
 
         // update slug method
         $fromColumnGetter = 'get'.Inflector::camelize($fromColumn);
@@ -105,12 +118,6 @@ $uniqueCode
 EOF
         );
         $this->definitions['entity_base']->addMethod($method);
-
-        // events
-        $this->configClass['events']['prePersist'][] = $method->getName();
-        if ($this->getOption('update')) {
-            $this->configClass['events']['preUpdate'][] = $method->getName();
-        }
     }
 
     /*

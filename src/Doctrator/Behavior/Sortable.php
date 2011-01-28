@@ -51,6 +51,19 @@ class Sortable extends ClassExtension
     /**
      * @inheritdoc
      */
+    protected function doConfigClassProcess()
+    {
+        $column = $this->getOption('column');
+
+        $this->configClass['columns'][$column] = array('type' => 'integer');
+
+        $this->configClass['events']['prePersist'][] = 'sortableSetPosition';
+        $this->configClass['events']['preUpdate'][]  = 'sortableSetPosition';
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function doClassProcess()
     {
         // new position
@@ -62,8 +75,6 @@ class Sortable extends ClassExtension
         $this->column       = $this->getOption('column');
         $this->columnSetter = 'set'.Inflector::camelize($this->column);
         $this->columnGetter = 'get'.Inflector::camelize($this->column);
-
-        $this->configClass['columns'][$this->column] = array('type' => 'integer');
 
         // methods
         $this->processEntityIsFirstMethod();
@@ -77,7 +88,7 @@ class Sortable extends ClassExtension
         $this->processRepositoryGetMaxPositionMethod();
 
         // events
-        $this->processSortableSetPositionEvent();
+        $this->processSortableSetPositionMethod();
     }
 
     /*
@@ -331,9 +342,9 @@ EOF
     }
 
     /*
-     * sortableSetPosition event
+     * sortableSetPosition method
      */
-    protected function processSortableSetPositionEvent()
+    protected function processSortableSetPositionMethod()
     {
         $positionAsNew = 'top' == $this->getOption('new_position') ? '1' : '$maxPosition + 1';
 

@@ -50,6 +50,28 @@ class Ipable extends ClassExtension
     /**
      * @inheritdoc
      */
+    protected function doConfigClassProcess()
+    {
+        // created
+        if ($this->getOption('created_enabled')) {
+            $column = $this->getOption('created_column');
+            $this->configClass['columns'][$column] = array('type' => 'string', 'length' => 50, 'nullable' => true);
+
+            $this->configClass['events']['prePersist'][] = 'updateIpableCreated';
+        }
+
+        // updated
+        if ($this->getOption('updated_enabled')) {
+            $column = $this->getOption('updated_column');
+            $this->configClass['columns'][$column] = array('type' => 'string', 'length' => 50, 'nullable' => true);
+
+            $this->configClass['events']['preUpdate'][] = 'updateIpableUpdated';
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function doClassProcess()
     {
         /*
@@ -58,20 +80,17 @@ class Ipable extends ClassExtension
         if ($this->getOption('created_enabled')) {
             // column
             $column = $this->getOption('created_column');
-            $this->configClass['columns'][$column] = array('type' => 'string', 'length' => 50, 'nullable' => true);
 
             // event
             $columnSetter  = 'set'.Inflector::camelize($column);
             $getIpCallable = $this->getIpCallableAsString();
 
-            $method = new Method('public', 'updateTimestampableCreated', '', <<<EOF
+            $method = new Method('public', 'updateIpableCreated', '', <<<EOF
         \$this->$columnSetter(call_user_func($getIpCallable));
 EOF
             );
 
             $this->definitions['entity_base']->addMethod($method);
-
-            $this->configClass['events']['prePersist'][] = $method->getName();
         }
 
         /*
@@ -80,20 +99,17 @@ EOF
         if ($this->getOption('updated_enabled')) {
             // column
             $column = $this->getOption('updated_column');
-            $this->configClass['columns'][$column] = array('type' => 'string', 'length' => 50, 'nullable' => true);
 
             // event
             $columnSetter  = 'set'.Inflector::camelize($column);
             $getIpCallable = $this->getIpCallableAsString();
 
-            $method = new Method('public', 'updateTimestampableUpdated', '', <<<EOF
+            $method = new Method('public', 'updateIpableUpdated', '', <<<EOF
         \$this->$columnSetter(call_user_func($getIpCallable));
 EOF
             );
 
             $this->definitions['entity_base']->addMethod($method);
-
-            $this->configClass['events']['preUpdate'][] = $method->getName();
         }
     }
 

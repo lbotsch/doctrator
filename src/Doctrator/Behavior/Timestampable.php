@@ -49,6 +49,28 @@ class Timestampable extends ClassExtension
     /**
      * @inheritdoc
      */
+    protected function doConfigClassProcess()
+    {
+        // created
+        if ($this->getOption('created_enabled')) {
+            $column = $this->getOption('created_column');
+            $this->configClass['columns'][$column] = array('type' => 'datetime', 'nullable' => true);
+
+            $this->configClass['events']['prePersist'][] = 'updateTimestampableCreated';
+        }
+
+        // updated
+        if ($this->getOption('updated_enabled')) {
+            $column = $this->getOption('updated_column');
+            $this->configClass['columns'][$column] = array('type' => 'datetime', 'nullable' => true);
+
+            $this->configClass['events']['preUpdate'][] = 'updateTimestampableUpdated';
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function doClassProcess()
     {
         /*
@@ -57,7 +79,6 @@ class Timestampable extends ClassExtension
         if ($this->getOption('created_enabled')) {
             // column
             $column = $this->getOption('created_column');
-            $this->configClass['columns'][$column] = array('type' => 'datetime', 'nullable' => true);
 
             // event
             $columnSetter = 'set'.Inflector::camelize($column);
@@ -68,8 +89,6 @@ EOF
             );
 
             $this->definitions['entity_base']->addMethod($method);
-
-            $this->configClass['events']['prePersist'][] = $method->getName();
         }
 
         /*
@@ -78,7 +97,6 @@ EOF
         if ($this->getOption('updated_enabled')) {
             // column
             $column = $this->getOption('updated_column');
-            $this->configClass['columns'][$column] = array('type' => 'datetime', 'nullable' => true);
 
             // event
             $columnSetter = 'set'.Inflector::camelize($column);
@@ -89,8 +107,6 @@ EOF
             );
 
             $this->definitions['entity_base']->addMethod($method);
-
-            $this->configClass['events']['preUpdate'][] = $method->getName();
         }
     }
 }

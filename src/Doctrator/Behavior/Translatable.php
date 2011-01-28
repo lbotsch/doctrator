@@ -43,10 +43,8 @@ class Translatable extends ClassExtension
     /**
      * @inheritdoc
      */
-    public function getNewConfigClasses($class, \ArrayObject $configClass)
+    protected function doNewConfigClassesProcess()
     {
-        $newConfigClasses = array();
-
         // %class%Translation
         $translationConfigClass = array(
             'columns' => array(
@@ -54,31 +52,29 @@ class Translatable extends ClassExtension
                 'locale' => array('type' => 'string', 'length' => 7),
             ),
             'relations' => array(
-                'parent' => array('type' => 'ManyToOne', 'targetEntity' => $class, 'inversedBy' => 'translations'),
+                'parent' => array('type' => 'ManyToOne', 'targetEntity' => $this->class, 'inversedBy' => 'translations'),
             ),
         );
 
-        $configClassColumns = $configClass['columns'];
+        $configClassColumns = $this->configClass['columns'];
         foreach ($this->getOption('columns') as $column) {
             if (!isset($configClassColumns[$column])) {
-                throw new \RuntimeException(sprintf('The column "%s" of the class "%s" does not exists.', $column, $class));
+                throw new \RuntimeException(sprintf('The column "%s" of the class "%s" does not exists.', $column, $this->class));
             }
             $translationConfigClass['columns'][$column] = $configClassColumns[$column];
 
             unset($configClassColumns[$column]);
         }
-        $configClass['columns'] = $configClassColumns;
+        $this->configClass['columns'] = $configClassColumns;
 
-        $newConfigClasses[$class.'Translation'] = $translationConfigClass;
+        $this->newConfigClasses[$this->class.'Translation'] = $translationConfigClass;
 
         // relation
-        $configClass['relations']['translations'] = array(
+        $this->configClass['relations']['translations'] = array(
             'type'         => 'OneToMany',
-            'targetEntity' => $class.'Translation',
+            'targetEntity' => $this->class.'Translation',
             'mappedBy'     => 'parent',
         );
-
-        return $newConfigClasses;
     }
 
     /**
