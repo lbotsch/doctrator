@@ -49,8 +49,14 @@ class EntityDataCamelCaseMap extends Extension
             $dataCamelCaseMap[$name] = Inflector::camelize($name);
         }
 
-        // relations
-        foreach ($this->configClass['relations'] as $name => $relation) {
+        // associations
+        $associations = array();
+        foreach (array('one_to_one', 'one_to_many', 'many_to_one', 'many_to_many') as $type) {
+            foreach ($this->configClass[$type] as $name => $association) {
+                $associations[$name] = array_merge($association, array('type' => $type));
+            }
+        }
+        foreach ($associations as $name => $association) {
             $dataCamelCaseMap[$name] = Inflector::camelize($name);
         }
 

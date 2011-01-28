@@ -93,18 +93,18 @@ class Core extends Extension
         $this->processTableNameMapping();
         $this->processCustomRepositoryClassMapping();
         $this->processColumnsMapping();
-        $this->processRelationsMapping();
+        $this->processAssociationsMapping();
         $this->processIndexesMapping();
         $this->processEventsMapping();
 
-        // relations init collections (constructor)
-        $this->processRelationsInitCollections();
+        // associations init collections (constructor)
+        $this->processAssociationsInitCollections();
 
         // columns setters && getters
         $this->processColumnsSettersAndGetters();
 
-        // relations setters && getters
-        $this->processRelationsSettersAndGetters();
+        // associations setters && getters
+        $this->processAssociationsSettersAndGetters();
 
         // set && get
         $this->processSetMethod();
@@ -143,6 +143,53 @@ class Core extends Extension
 
         // loadMetadata method
         $this->processLoadMetadataMethod();
+    }
+
+    /*
+     * Init mapping.
+     */
+    protected function initMapping()
+    {
+        // table
+        if (!isset($this->configClass['table'])) {
+            $this->configClass['table'] = null;
+        }
+
+        // columns
+        if (!isset($this->configClass['columns'])) {
+            $this->configClass['columns'] = array();
+        }
+
+        // associations
+        if (!isset($this->configClass['one_to_one'])) {
+            $this->configClass['one_to_one'] = array();
+        }
+        if (!isset($this->configClass['one_to_many'])) {
+            $this->configClass['one_to_many'] = array();
+        }
+        if (!isset($this->configClass['many_to_one'])) {
+            $this->configClass['many_to_one'] = array();
+        }
+        if (!isset($this->configClass['many_to_many'])) {
+            $this->configClass['many_to_many'] = array();
+        }
+
+        // indexes
+        if (!isset($this->configClass['indexes'])) {
+            $this->configClass['indexes'] = array();
+        }
+
+        // events
+        $this->configClass['events'] = array(
+            'prePersist'  => array('prePersist'),
+            'postPersist' => array('postPersist'),
+            'preUpdate'   => array('preUpdate'),
+            'postUpdate'  => array('postUpdate'),
+            'preRemove'   => array('preRemove'),
+            'postRemove'  => array('postRemove'),
+            'onFlush'     => array('onFlush'),
+            'postLoad'    => array('postLoad'),
+        );
     }
 
     /*
@@ -234,44 +281,6 @@ EOF
 
         // repository_base
         $this->outputs['repository_base'] = new Output($this->outputs['repository']->getDir().'/Base', true);
-    }
-
-    /*
-     * Init mapping.
-     */
-    protected function initMapping()
-    {
-        // table
-        if (!isset($this->configClass['table'])) {
-            $this->configClass['table'] = null;
-        }
-
-        // columns
-        if (!isset($this->configClass['columns'])) {
-            $this->configClass['columns'] = array();
-        }
-
-        // relations
-        if (!isset($this->configClass['relations'])) {
-            $this->configClass['relations'] = array();
-        }
-
-        // indexes
-        if (!isset($this->configClass['indexes'])) {
-            $this->configClass['indexes'] = array();
-        }
-
-        // events
-        $this->configClass['events'] = array(
-            'prePersist'  => array('prePersist'),
-            'postPersist' => array('postPersist'),
-            'preUpdate'   => array('preUpdate'),
-            'postUpdate'  => array('postUpdate'),
-            'preRemove'   => array('preRemove'),
-            'postRemove'  => array('postRemove'),
-            'onFlush'     => array('onFlush'),
-            'postLoad'    => array('postLoad'),
-        );
     }
 
     /*
@@ -458,21 +467,13 @@ EOF
     }
 
     /*
-     * Relations mapping.
+     * Associations mapping.
      */
-    protected function processRelationsMapping()
+    protected function processAssociationsMapping()
     {
-        foreach ($this->configClass['relations'] as $name => &$relation) {
-            if (!isset($relation['type'])) {
-                throw new \RuntimeException(sprintf('The relation "%s" of the class "%s" does not have type.', $name, $this->class));
-            }
-
-            if (!in_array($relation['type'], array('OneToOne', 'OneToMany', 'ManyToOne', 'ManyToMany'))) {
-                throw new \RuntimeException(sprintf('The type "%s" relation "%s" of the class "%s" is not valid.', $relation['type'], $name, $this->class));
-            }
-
-            if (!isset($relation['targetEntity'])) {
-                throw new \RuntimeException(sprintf('The relation "%s" of the class "%s" does not have targetEntity.', $name, $this->class));
+        foreach ($this->mergeAssociations() as $name => $association) {
+            if (!isset($association['class'])) {
+                throw new \RuntimeException(sprintf('The association "%s" of the class "%s" does not have class.', $name, $this->class));
             }
 
             // property
@@ -484,61 +485,56 @@ EOF
              */
             $mapping = array(
                 'fieldName'    => $name,
-                'targetEntity' => $relation['targetEntity'],
+                'targetEntity' => $association['class'],
+                'cascade'      => array('persist', 'remove'),
             );
 
-            if (isset($relation['fetch'])) {
-                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_'.$relation['fetch']);
+            if (isset($association['fetch'])) {
+                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_'.$association['fetch']);
             }
 
-            // FIXME: make customizable
-            $relation['cascade'] = array('persist', 'remove');
-
-            if (isset($relation['cascade'])) {
-                $mapping['cascade'] = $relation['cascade'];
-            }
-
-            // OneToOne
-            if ('OneToOne' == $relation['type']) {
+            // one_to_one
+            if ('one_to_one' == $association['type']) {
                 // inverse
-                if (isset($relation['mappedBy'])) {
-                    $mapping['mappedBy'] = $relation['mappedBy'];
+                if (isset($association['mapped'])) {
+                    $mapping['mappedBy'] = $association['mappedBy'];
                 }
                 // owning
                 else {
-                    if (isset($relation['inversedBy'])) {
-                        $mapping['inversedBy'] = $relation['inversedBy'];
+                    if (isset($association['inversed'])) {
+                        $mapping['inversed'] = $association['inversedBy'];
                     }
                 }
             }
-            // OneToMany
-            if ('OneToMany' == $relation['type']) {
-                if (!isset($relation['mappedBy'])) {
-                    throw new \RuntimeException('The relation "%s" of the class "%s" is OneToMany and does not have mappedBy.', $name, $this->class);
+            // one_to_many
+            if ('one_to_many' == $association['type']) {
+                if (!isset($association['mapped'])) {
+                    throw new \RuntimeException('The association "%s" of the class "%s" is one_to_many and does not have mapped.', $name, $this->class);
                 }
-                $mapping['mappedBy'] = $relation['mappedBy'];
+                $mapping['mappedBy'] = $association['mapped'];
             }
-            // ManyToOne
-            if ('ManyToOne' == $relation['type']) {
-                if (isset($relation['inversedBy'])) {
-                    $mapping['inversedBy'] = $relation['inversedBy'];
+            // many_to_one
+            if ('many_to_one' == $association['type']) {
+                if (isset($association['inversed'])) {
+                    $mapping['inversed'] = $association['inversed'];
                 }
             }
-            // ManyToMany
-            if ('ManyToMany' == $relation['type']) {
-                if (isset($relation['mappedBy'])) {
-                    $mapping['mappedBy'] = $relation['mappedBy'];
-                } else if (isset($relation['joinTable'])) {
-                    if (isset($relation['inversedBy'])) {
-                        $mapping['inversedBy'] = $relation['inversedBy'];
+            // many_to_many
+            if ('many_to_many' == $association['type']) {
+                if (isset($association['mapped'])) {
+                    $mapping['mapped'] = $association['mapped'];
+                } else if (isset($association['join_table'])) {
+                    if (isset($association['inversed'])) {
+                        $mapping['inversedBy'] = $association['inversed'];
                     }
                 }
             }
 
+            $typeCamelCase = Inflector::camelize($association['type']);
             $mapping = Dumper::exportArray($mapping, 12);
 
             $this->loadMetadataCode[$this->class][] = <<<EOF
-        \$metadata->map{$relation['type']}($mapping);
+        \$metadata->map{$typeCamelCase}($mapping);
 EOF;
 
         }
@@ -577,11 +573,11 @@ EOF;
     }
 
     /*
-     * Relations setters and getters.
+     * Associations setters and getters.
      */
-    protected function processRelationsSettersAndGetters()
+    protected function processAssociationsSettersAndGetters()
     {
-        foreach ($this->configClass['relations'] as $name => $relation) {
+        foreach ($this->mergeAssociations() as $name => $association) {
             // setter
             $method = new Method('public', 'set'.Inflector::camelize($name), '$value', <<<EOF
         \$this->$name = \$value;
@@ -589,9 +585,9 @@ EOF
             );
             $method->setDocComment(<<<EOF
     /**
-     * Set the $name relation value.
+     * Set the $name association value.
      *
-     * @param mixed \$value The relation value.
+     * @param mixed \$value The association value.
      */
 EOF
             );
@@ -604,9 +600,9 @@ EOF
             );
             $method->setDocComment(<<<EOF
     /**
-     * Returns the $name relation value.
+     * Returns the $name association value.
      *
-     * @return mixed The relation value.
+     * @return mixed The association value.
      */
 EOF
             );
@@ -630,8 +626,8 @@ EOF
 
 EOF;
         }
-        // relations
-        foreach ($this->configClass['relations'] as $name => $relation) {
+        // associations
+        foreach ($this->mergeAssociations() as $name => $association) {
             $setter = 'set'.Inflector::camelize($name);
             $code .= <<<EOF
         if ('$name' == \$name) {
@@ -678,8 +674,8 @@ EOF
 
 EOF;
         }
-        // relations
-        foreach ($this->configClass['relations'] as $name => $relation) {
+        // associations
+        foreach ($this->mergeAssociations() as $name => $association) {
             $getter = 'get'.Inflector::camelize($name);
             $code .= <<<EOF
         if ('$name' == \$name) {
@@ -782,16 +778,16 @@ EOF
     }
 
     /*
-     * Relations init collections.
+     * Associations init collections.
      */
-    protected function processRelationsInitCollections()
+    protected function processAssociationsInitCollections()
     {
         $collections = array();
-        foreach ($this->configClass['relations'] as $name => $relation) {
+        foreach ($this->mergeAssociations() as $name => $association) {
             if (
-                'ManyToMany' == $relation['type']
+                'many_to_many' == $association['type']
                 ||
-                ('OneToMany' == $relation['type'] && isset($relation['mappedBy']))
+                ('one_to_many' == $association['type'] && isset($association['mapped']))
             ) {
                 $collections[] = <<<EOF
         \$this->$name = new \Doctrine\Common\Collections\ArrayCollection();
@@ -1249,5 +1245,17 @@ EOF
         );
 
         $this->definitions['entity_base']->addMethod($method);
+    }
+
+    protected function mergeAssociations()
+    {
+        $associations = array();
+        foreach (array('one_to_one', 'one_to_many', 'many_to_one', 'many_to_many') as $type) {
+            foreach ($this->configClass[$type] as $name => $association) {
+                $associations[$name] = array_merge($association, array('type' => $type));
+            }
+        }
+
+        return $associations;
     }
 }

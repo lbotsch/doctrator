@@ -35,8 +35,8 @@ $configClasses = array(
             'score'     => array('type' => 'decimal', 'precision' => 2, 'scale' => 4),
             'date'      => 'date',
         ),
-        'relations' => array(
-            'category' => array('type' => 'ManyToOne', 'targetEntity' => 'Model\Category'),
+        'many_to_one' => array(
+            'category' => array('class' => 'Model\Category', 'inversed' => 'articles'),
         ),
         'indexes' => array(
             'my_slug_index'  => array('columns' => array('title_slug'), 'unique' => true),
@@ -48,8 +48,8 @@ $configClasses = array(
             'id'   => array('id' => 'auto', 'type' => 'integer'),
             'name' => array('type' => 'string', 'length' => 100)
         ),
-        'relations' => array(
-            'articles' => array('type' => 'OneToMany', 'targetEntity' => 'Model\Article', 'mappedBy' => 'category'),
+        'one_to_many' => array(
+            'articles' => array('class' => 'Model\Article', 'mapped' => 'category'),
         ),
     ),
     'Model\Simple' => array(

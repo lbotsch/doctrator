@@ -50,9 +50,9 @@ class Taggable extends ClassExtension
                 'parent_id' => array('type' => 'integer'),
                 'tag_id'    => array('type' => 'integer'),
             ),
-            'relations' => array(
-                'parent' => array('type' => 'ManyToOne', 'targetEntity' => $this->class),
-                'tag'    => array('type' => 'ManyToOne', 'targetEntity' => $this->class.'Tag'),
+            'many_to_one' => array(
+                'parent' => array('class' => $this->class),
+                'tag'    => array('class' => $this->class.'Tag'),
             ),
             'indexes' => array(
                 array('columns' => array('parent_id', 'tag_id'), 'unique' => true),
