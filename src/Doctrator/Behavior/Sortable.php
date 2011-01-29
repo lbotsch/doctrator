@@ -388,8 +388,5 @@ EOF
         );
 
         $this->definitions['entity_base']->addMethod($method);
-
-        $this->configClass['events']['prePersist'][] = $method->getName();
-        $this->configClass['events']['preUpdate'][]  = $method->getName();
     }
 }
