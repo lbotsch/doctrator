@@ -127,6 +127,7 @@ class Core extends Extension
         $this->processCheckIsNotModifiedMethod();
         $this->processGetModifiedMethod();
         $this->processRefreshMethod();
+        $this->processChangeSetMethod();
 
         if ($this->getOption('active_record')) {
             $this->processActiveRecordSaveMethod();
@@ -1098,6 +1099,27 @@ EOF
      * Refresh the entity from the database.
      *
      * @return void
+     */
+EOF
+        );
+
+        $this->definitions['entity_base']->addMethod($method);
+    }
+
+    /*
+     * "changeSet" method.
+     */
+    protected function processChangeSetMethod()
+    {
+        $method = new Method('public', 'changeSet', '', <<<EOF
+        return static::entityManager()->getUnitOfWork()->getEntityChangeSet(\$this);
+EOF
+        );
+        $method->setDocComment(<<<EOF
+    /**
+     * Returns the change set of the entity.
+     *
+     * @return array The change set.
      */
 EOF
         );

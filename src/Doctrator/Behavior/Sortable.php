@@ -354,12 +354,12 @@ EOF
         if (\$this->isNew()) {
             \$position = $positionAsNew;
         } else {
-            \$changeSet = static::entityManager()->getUnitOfWork()->getEntityChangeSet(\$this);
-            if (!isset(\$changeSet['position'])) {
+            \$changeSet = \$this->changeSet();
+            if (!isset(\$changeSet['{$this->column}'])) {
                 return;
             }
-            \$oldPosition = \$changeSet['position'][0];
-            \$position    = \$changeSet['position'][1];
+            \$oldPosition = \$changeSet['{$this->column}'][0];
+            \$position    = \$changeSet['{$this->column}'][1];
         }
 
         \$this->{$this->columnSetter}(\$position);

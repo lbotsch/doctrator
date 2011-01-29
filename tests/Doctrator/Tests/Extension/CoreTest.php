@@ -458,6 +458,16 @@ class CoreTest extends \Doctrator\Tests\TestCase
         $this->assertSame('foo', $simple->getColumn());
     }
 
+    public function testChangeSet()
+    {
+        $simple = new Simple();
+        $simple->setColumn('foo');
+        $simple->save();
+        $simple->setColumn('bar');
+
+        $this->assertSame($this->entityManager->getUnitOfWork()->getEntityChangeSet($simple), $simple->changeSet());
+    }
+
     public function testSave()
     {
         $simple = new Simple();
