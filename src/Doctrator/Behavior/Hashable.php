@@ -46,12 +46,22 @@ class Hashable extends ClassExtension
     /**
      * @inheritdoc
      */
+    protected function doConfigClassProcess()
+    {
+        // column
+        $column = $this->getOption('column');
+        $this->configClass['columns'][$column] = array('type' => 'string', 'length' => 40, 'unique' => true);
+
+        // event
+        $this->configClass['events']['prePersist'][] = 'updateHashableHash';
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function doClassProcess()
     {
         $column = $this->getOption('column');
-
-        // column definition
-        $this->configClass['columns'][$column] = array('type' => 'string', 'length' => 40, 'unique' => true);
 
         // event
         $columnSetter = 'set'.Inflector::camelize($column);
@@ -72,7 +82,5 @@ EOF
         );
 
         $this->definitions['entity_base']->addMethod($method);
-
-        $this->configClass['events']['prePersist'][] = $method->getName();
     }
 }
