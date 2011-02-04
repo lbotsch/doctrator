@@ -27,53 +27,28 @@ use Mondongo\Mondator\Definition\Property;
 use Mondongo\Inflector;
 
 /**
- * The doctrator EntityArrayAccess extension.
+ * The doctrator PropertyOverloading extension.
  *
  * @package Doctrator
  * @author  Pablo Díez Pascual <pablodip@gmail.com>
  */
-class EntityArrayAccess extends Extension
+class PropertyOverloading extends Extension
 {
     /**
      * @inheritdoc
      */
     protected function doClassProcess()
     {
-        $this->definitions['entity_base']->addInterface('\ArrayAccess');
-
-        $this->processOffsetExistsMethod();
-        $this->processOffsetSetMethod();
-        $this->processOffsetGetMethod();
-        $this->processOffsetUnsetMethod();
+        $this->process__setMethod();
+        $this->process__getMethod();
     }
 
     /*
-     * "offsetExists" method
+     * "__set" method
      */
-    protected function processOffsetExistsMethod()
+    protected function process__setMethod()
     {
-        $method = new Method('public', 'offsetExists', '$name', <<<EOF
-        throw new \LogicException('You cannot check if data exists in the entity.');
-EOF
-        );
-        $method->setDocComment(<<<EOF
-    /**
-     * Throws an \LogicException because you cannot check if data exists.
-     *
-     * @throws \LogicException
-     */
-EOF
-        );
-
-        $this->definitions['entity_base']->addMethod($method);
-    }
-
-    /*
-     * "offsetSet" method
-     */
-    protected function processOffsetSetMethod()
-    {
-        $method = new Method('public', 'offsetSet', '$name, $value', <<<EOF
+        $method = new Method('public', '__set', '$name, $value', <<<EOF
         return \$this->set(\$name, \$value);
 EOF
         );
@@ -93,11 +68,11 @@ EOF
     }
 
     /*
-     * "offsetGet" method
+     * "__get" method
      */
-    protected function processOffsetGetMethod()
+    protected function process__getMethod()
     {
-        $method = new Method('public', 'offsetGet', '$name', <<<EOF
+        $method = new Method('public', '__get', '$name', <<<EOF
         return \$this->get(\$name);
 EOF
         );
@@ -110,27 +85,6 @@ EOF
      * @return mixed Some data.
      *
      * @see get()
-     */
-EOF
-        );
-
-        $this->definitions['entity_base']->addMethod($method);
-    }
-
-    /*
-     * "offsetUnset" method
-     */
-    protected function processOffsetUnsetMethod()
-    {
-        $method = new Method('public', 'offsetUnset', '$name', <<<EOF
-        throw new \LogicException('You cannot unset data in the entity.');
-EOF
-        );
-        $method->setDocComment(<<<EOF
-    /**
-     * Throws a \LogicException because you cannot unset data in the entity.
-     *
-     * @throws \LogicException
      */
 EOF
         );

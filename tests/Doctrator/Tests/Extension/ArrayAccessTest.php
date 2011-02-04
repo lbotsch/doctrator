@@ -23,7 +23,7 @@ namespace Doctrator\Tests\Extension;
 
 use Model\Article;
 
-class EntityArrayAccessTest extends \Doctrator\Tests\TestCase
+class ArrayAccessTest extends \Doctrator\Tests\TestCase
 {
     /**
      * @expectedException \LogicException

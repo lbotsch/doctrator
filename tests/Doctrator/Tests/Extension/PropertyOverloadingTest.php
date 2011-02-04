@@ -23,7 +23,7 @@ namespace Doctrator\Tests\Extension;
 
 use Model\Article;
 
-class EntityPropertyOverloadingTest extends \Doctrator\Tests\TestCase
+class PropertyOverloadingTest extends \Doctrator\Tests\TestCase
 {
     public function test__set()
     {

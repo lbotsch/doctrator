@@ -202,9 +202,9 @@ $mondator->setExtensions(array(
         'default_output' => __DIR__.'/Model',
     )),
     new Doctrator\Extension\ActiveRecord(),
+    new Doctrator\Extension\ArrayAccess(),
+    new Doctrator\Extension\PropertyOverloading(),
     new Doctrator\Extension\Behaviors(),
-    new Doctrator\Extension\EntityArrayAccess(),
-    new Doctrator\Extension\EntityPropertyOverloading(),
 ));
 $mondator->process();
 
