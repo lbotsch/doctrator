@@ -201,6 +201,8 @@ $mondator->setExtensions(array(
     new Doctrator\Extension\Core(array(
         'default_output' => __DIR__.'/Model',
     )),
+    new Doctrator\Extension\ActiveRecord(),
+    new Doctrator\Extension\Behaviors(),
     new Doctrator\Extension\EntityDataCamelCaseMap(),
     new Doctrator\Extension\EntityArrayAccess(),
     new Doctrator\Extension\EntityPropertyOverloading(),
@@ -214,8 +216,7 @@ $mondator = new Mondator();
 $mondator->setConfigClasses($configClasses);
 $mondator->setExtensions(array(
     new Doctrator\Extension\Core(array(
-        'default_output' => __DIR__.'/ModelNotAR',
-        'active_record'  => false,
+        'default_output' => __DIR__.'/ModelNotAR'
     )),
 ));
 $mondator->process();
