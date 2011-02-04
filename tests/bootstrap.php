@@ -203,7 +203,6 @@ $mondator->setExtensions(array(
     )),
     new Doctrator\Extension\ActiveRecord(),
     new Doctrator\Extension\Behaviors(),
-    new Doctrator\Extension\EntityDataCamelCaseMap(),
     new Doctrator\Extension\EntityArrayAccess(),
     new Doctrator\Extension\EntityPropertyOverloading(),
 ));
