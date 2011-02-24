@@ -22,10 +22,10 @@
 namespace Doctrator\Extension;
 
 use Mondongo\Mondator\Extension;
-use Mondongo\Mondator\Definition\Definition;
+use Mondongo\Mondator\Definition;
 use Mondongo\Mondator\Definition\Method;
 use Mondongo\Mondator\Definition\Property;
-use Mondongo\Mondator\Output\Output;
+use Mondongo\Mondator\Output;
 use Mondongo\Mondator\Dumper;
 use Mondongo\Inflector;
 
@@ -150,9 +150,7 @@ class Core extends Extension
      */
     protected function processInitDefinitionsAndOutputs()
     {
-        /*
-         * Classes.
-         */
+        // classes
         $classes = array('entity' => $this->class);
         if (false !== $pos = strrpos($classes['entity'], '\\')) {
             $entityNamespace = substr($classes['entity'], 0, $pos);
@@ -166,55 +164,7 @@ class Core extends Extension
             $classes['repository_base'] = 'Base'.$classes['entity'].'Repository';
         }
 
-        /*
-         * Definitions
-         */
-
-        // entity
-        $this->definitions['entity'] = $definition = new Definition($classes['entity']);
-        $definition->setParentClass('\\'.$classes['entity_base']);
-        $definition->setDocComment(<<<EOF
-/**
- * {$this->class} entity.
- */
-EOF
-        );
-
-        // entity_base
-        $this->definitions['entity_base'] = $definition = new Definition($classes['entity_base']);
-        $definition->setIsAbstract(true);
-        $definition->setDocComment(<<<EOF
-/**
- * Base class of the {$this->class} entity.
- */
-EOF
-        );
-
-        // repository
-        $this->definitions['repository'] = $definition = new Definition($classes['repository']);
-        $definition->setParentClass('\\'.$classes['repository_base']);
-        $definition->setDocComment(<<<EOF
-/**
- * Repository of the {$this->class} entity.
- */
-EOF
-        );
-
-        // repository_base
-        $this->definitions['repository_base'] = $definition = new Definition($classes['repository_base']);
-        $definition->setIsAbstract(true);
-        $definition->setParentClass('\\Doctrine\\ORM\\EntityRepository');
-        $definition->setDocComment(<<<EOF
-/**
- * Base class of the repository of the {$this->class} entity.
- */
-EOF
-        );
-
-        /*
-         * Outputs
-         */
-
+        // dir
         $dir = $this->getOption('default_output');
         if (isset($this->configClass['output'])) {
             $dir = $this->configClass['output'];
@@ -224,16 +174,45 @@ EOF
         }
 
         // entity
-        $this->outputs['entity'] = new Output($dir);
+        $this->definitions['entity'] = $definition = new Definition($classes['entity'], new Output($dir));
+        $definition->setParentClass('\\'.$classes['entity_base']);
+        $definition->setDocComment(<<<EOF
+/**
+ * {$this->class} entity.
+ */
+EOF
+        );
 
         // entity_base
-        $this->outputs['entity_base'] = new Output($this->outputs['entity']->getDir().'/Base', true);
+        $this->definitions['entity_base'] = $definition = new Definition($classes['entity_base'], new Output($dir.'/Base', true));
+        $definition->setIsAbstract(true);
+        $definition->setDocComment(<<<EOF
+/**
+ * Base class of the {$this->class} entity.
+ */
+EOF
+        );
 
         // repository
-        $this->outputs['repository'] = new Output($dir);
+        $this->definitions['repository'] = $definition = new Definition($classes['repository'], new Output($dir));
+        $definition->setParentClass('\\'.$classes['repository_base']);
+        $definition->setDocComment(<<<EOF
+/**
+ * Repository of the {$this->class} entity.
+ */
+EOF
+        );
 
         // repository_base
-        $this->outputs['repository_base'] = new Output($this->outputs['repository']->getDir().'/Base', true);
+        $this->definitions['repository_base'] = $definition = new Definition($classes['repository_base'], new Output($dir.'/Base', true));
+        $definition->setIsAbstract(true);
+        $definition->setParentClass('\\Doctrine\\ORM\\EntityRepository');
+        $definition->setDocComment(<<<EOF
+/**
+ * Base class of the repository of the {$this->class} entity.
+ */
+EOF
+        );
     }
 
     /*

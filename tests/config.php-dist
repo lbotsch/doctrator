@@ -1,8 +1,8 @@
 <?php
 
 return array(
-    'doctrine_common_lib_dir' => '/path/to/doctrine/common/lib/dir',
-    'doctrine_dbal_lib_dir'   => '/path/to/doctrine/dbal/lib/dir',
-    'doctrine_orm_lib_dir'    => '/path/to/doctrine/orm/lib/dir',
-    'mondongo_lib_dir'        => '/path/to/mondongo/lib/dir',
+    'doctrine_common_lib_dir' => '/path/to/doctrine/common/lib',
+    'doctrine_dbal_lib_dir'   => '/path/to/doctrine/dbal/lib',
+    'doctrine_orm_lib_dir'    => '/path/to/doctrine/orm/lib',
+    'mondongo_src_dir'        => '/path/to/mondongo/src',
 );

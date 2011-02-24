@@ -3,9 +3,9 @@
 $config = require(__DIR__.'/config.php');
 
 // autoloader
-require($config['mondongo_lib_dir'].'/vendor/symfony/src/Symfony/Component/HttpFoundation/UniversalClassLoader.php');
+require($config['mondongo_src_dir'].'/vendor/symfony/src/Symfony/Component/ClassLoader/UniversalClassLoader.php');
 
-use Symfony\Component\HttpFoundation\UniversalClassLoader;
+use Symfony\Component\ClassLoader\UniversalClassLoader;
 
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
@@ -15,7 +15,7 @@ $loader->registerNamespaces(array(
     'Doctrine\\DBAL'   => $config['doctrine_dbal_lib_dir'],
     'Doctrine\\ORM'    => $config['doctrine_orm_lib_dir'],
     'Model'            => __DIR__,
-    'Mondongo'         => $config['mondongo_lib_dir'],
+    'Mondongo'         => $config['mondongo_src_dir'],
 ));
 $loader->register();
 
