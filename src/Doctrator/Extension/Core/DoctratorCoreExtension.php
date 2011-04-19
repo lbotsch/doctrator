@@ -19,7 +19,7 @@
  * along with Doctrator. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Doctrator\Extension;
+namespace Doctrator\Extension\Core;
 
 use Mandango\Mondator\Extension;
 use Mandango\Mondator\Definition;
@@ -27,7 +27,6 @@ use Mandango\Mondator\Definition\Method;
 use Mandango\Mondator\Definition\Property;
 use Mandango\Mondator\Output;
 use Mandango\Mondator\Dumper;
-use Mandango\Inflector;
 
 /**
  * The doctrator Core extension.
@@ -35,7 +34,7 @@ use Mandango\Inflector;
  * @package Doctrator
  * @author  Pablo Díez Pascual <pablodip@gmail.com>
  */
-class Core extends Extension
+class DoctratorCoreExtension extends Extension
 {
     protected $loadMetadataCode = array();
 
@@ -77,6 +76,14 @@ class Core extends Extension
         $this->processIndexesMapping();
         $this->processEventsMapping();
 
+        // templates
+        $this->processTemplate($this->definitions['entity_base'], 'core.php');
+
+        // loadMetadata method
+        $this->processLoadMetadataMethod();
+
+        return;
+
         // associations init collections (constructor)
         $this->processAssociationsInitCollections();
 
@@ -94,8 +101,7 @@ class Core extends Extension
         $this->processFromArrayMethod();
         $this->processToArrayMethod();
 
-        // loadMetadata method
-        $this->processLoadMetadataMethod();
+
     }
 
     /*
@@ -114,17 +120,17 @@ class Core extends Extension
         }
 
         // associations
-        if (!isset($this->configClass['one_to_one'])) {
-            $this->configClass['one_to_one'] = array();
+        if (!isset($this->configClass['oneToOne'])) {
+            $this->configClass['oneToOne'] = array();
         }
-        if (!isset($this->configClass['one_to_many'])) {
-            $this->configClass['one_to_many'] = array();
+        if (!isset($this->configClass['oneToMany'])) {
+            $this->configClass['oneToMany'] = array();
         }
-        if (!isset($this->configClass['many_to_one'])) {
-            $this->configClass['many_to_one'] = array();
+        if (!isset($this->configClass['manyToOne'])) {
+            $this->configClass['manyToOne'] = array();
         }
-        if (!isset($this->configClass['many_to_many'])) {
-            $this->configClass['many_to_many'] = array();
+        if (!isset($this->configClass['manyToMany'])) {
+            $this->configClass['manyToMany'] = array();
         }
 
         // indexes
@@ -361,44 +367,6 @@ EOF;
     }
 
     /*
-     * Columns setters and getters.
-     */
-    protected function processColumnsSettersAndGetters()
-    {
-        foreach ($this->configClass['columns'] as $name => $column) {
-            // setter
-            $method = new Method('public', 'set'.Inflector::camelize($name), '$value', <<<EOF
-        \$this->$name = \$value;
-EOF
-            );
-            $method->setDocComment(<<<EOF
-    /**
-     * Set the $name column value.
-     *
-     * @param mixed \$value The column value.
-     */
-EOF
-            );
-            $this->definitions['entity_base']->addMethod($method);
-
-            // getter
-            $method = new Method('public', 'get'.Inflector::camelize($name), '', <<<EOF
-        return \$this->$name;
-EOF
-            );
-            $method->setDocComment(<<<EOF
-    /**
-     * Returns the $name column value.
-     *
-     * @return mixed The column value.
-     */
-EOF
-            );
-            $this->definitions['entity_base']->addMethod($method);
-        }
-    }
-
-    /*
      * Associations mapping.
      */
     protected function processAssociationsMapping()
@@ -425,8 +393,8 @@ EOF
                 $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_'.$association['fetch']);
             }
 
-            // one_to_one
-            if ('one_to_one' == $association['type']) {
+            // oneToOne
+            if ('oneToOne' == $association['type']) {
                 // inverse
                 if (isset($association['mapped'])) {
                     $mapping['mappedBy'] = $association['mappedBy'];
@@ -438,21 +406,21 @@ EOF
                     }
                 }
             }
-            // one_to_many
-            if ('one_to_many' == $association['type']) {
+            // oneToMany
+            if ('oneToMany' == $association['type']) {
                 if (!isset($association['mapped'])) {
-                    throw new \RuntimeException('The association "%s" of the class "%s" is one_to_many and does not have mapped.', $name, $this->class);
+                    throw new \RuntimeException('The association "%s" of the class "%s" is oneToMany and does not have mapped.', $name, $this->class);
                 }
                 $mapping['mappedBy'] = $association['mapped'];
             }
-            // many_to_one
-            if ('many_to_one' == $association['type']) {
+            // manyToOne
+            if ('manyToOne' == $association['type']) {
                 if (isset($association['inversed'])) {
                     $mapping['inversed'] = $association['inversed'];
                 }
             }
-            // many_to_many
-            if ('many_to_many' == $association['type']) {
+            // manyToMany
+            if ('manyToMany' == $association['type']) {
                 if (isset($association['mapped'])) {
                     $mapping['mapped'] = $association['mapped'];
                 } else if (isset($association['join_table'])) {
@@ -462,11 +430,11 @@ EOF
                 }
             }
 
-            $typeCamelCase = Inflector::camelize($association['type']);
+            $typeCamelized = ucfirst($association['type']);
             $mapping = Dumper::exportArray($mapping, 12);
 
             $this->loadMetadataCode[$this->class][] = <<<EOF
-        \$metadata->map{$typeCamelCase}($mapping);
+        \$metadata->map{$typeCamelized}($mapping);
 EOF;
 
         }
@@ -505,263 +473,6 @@ EOF;
     }
 
     /*
-     * Associations setters and getters.
-     */
-    protected function processAssociationsSettersAndGetters()
-    {
-        foreach ($this->mergeAssociations() as $name => $association) {
-            // setter
-            $method = new Method('public', 'set'.Inflector::camelize($name), '$value', <<<EOF
-        \$this->$name = \$value;
-EOF
-            );
-            $method->setDocComment(<<<EOF
-    /**
-     * Set the $name association value.
-     *
-     * @param mixed \$value The association value.
-     */
-EOF
-            );
-            $this->definitions['entity_base']->addMethod($method);
-
-            // getter
-            $method = new Method('public', 'get'.Inflector::camelize($name), '', <<<EOF
-        return \$this->$name;
-EOF
-            );
-            $method->setDocComment(<<<EOF
-    /**
-     * Returns the $name association value.
-     *
-     * @return mixed The association value.
-     */
-EOF
-            );
-            $this->definitions['entity_base']->addMethod($method);
-        }
-    }
-
-    /*
-     * "set" method
-     */
-    protected function processSetMethod()
-    {
-        $code = '';
-        // columns
-        foreach ($this->configClass['columns'] as $name => $column) {
-            $setter = 'set'.Inflector::camelize($name);
-            $code .= <<<EOF
-        if ('$name' == \$name) {
-            return \$this->$setter(\$value);
-        }
-
-EOF;
-        }
-        // associations
-        foreach ($this->mergeAssociations() as $name => $association) {
-            $setter = 'set'.Inflector::camelize($name);
-            $code .= <<<EOF
-        if ('$name' == \$name) {
-            return \$this->$setter(\$value);
-        }
-
-EOF;
-        }
-        // exception
-        $code .= <<<EOF
-
-        throw new \InvalidArgumentException(sprintf('The data "%s" does not exists.', \$name));
-EOF;
-
-        $method = new Method('public', 'set', '$name, $value', $code);
-        $method->setDocComment(<<<EOF
-    /**
-     * Set data by name.
-     *
-     * @param string \$name  The data name.
-     * @param mixed  \$value The value.
-     *
-     * @throws \InvalidArgumentException If the data does not exists.
-     */
-EOF
-        );
-
-        $this->definitions['entity_base']->addMethod($method);
-    }
-
-    /*
-     * "get" method
-     */
-    protected function processGetMethod()
-    {
-        $code = '';
-        // columns
-        foreach ($this->configClass['columns'] as $name => $column) {
-            $getter = 'get'.Inflector::camelize($name);
-            $code .= <<<EOF
-        if ('$name' == \$name) {
-            return \$this->$getter();
-        }
-
-EOF;
-        }
-        // associations
-        foreach ($this->mergeAssociations() as $name => $association) {
-            $getter = 'get'.Inflector::camelize($name);
-            $code .= <<<EOF
-        if ('$name' == \$name) {
-            return \$this->$getter();
-        }
-
-EOF;
-        }
-        // exception
-        $code .= <<<EOF
-
-        throw new \InvalidArgumentException(sprintf('The data "%s" does not exists.', \$name));
-EOF;
-
-        $method = new Method('public', 'get', '$name', $code);
-        $method->setDocComment(<<<EOF
-    /**
-     * Get data by name.
-     *
-     * @param string \$name  The data name.
-     *
-     * @return mixed The data.
-     *
-     * @throws \InvalidArgumentException If the data does not exists.
-     */
-EOF
-        );
-
-        $this->definitions['entity_base']->addMethod($method);
-    }
-
-    /*
-     * "fromArray" method.
-     */
-    public function processFromArrayMethod()
-    {
-        $sets = '';
-
-        // columns
-        foreach ($this->configClass['columns'] as $name => $columns) {
-            $setter = 'set'.Inflector::camelize($name);
-            $sets[] = <<<EOF
-        if (isset(\$array['$name'])) {
-            \$this->$setter(\$array['$name']);
-        }
-EOF;
-        }
-
-        $method = new Method('public', 'fromArray', '$array', implode("\n", $sets));
-        $method->setDocComment(<<<EOF
-    /**
-     * Import data from an array.
-     *
-     * @param array \$array An array.
-     *
-     * @return void
-     */
-EOF
-        );
-
-        $this->definitions['entity_base']->addMethod($method);
-    }
-
-    /*
-     * "toArray" method
-     */
-    protected function processToArrayMethod()
-    {
-        $gets = array();
-
-        // columns
-        foreach ($this->configClass['columns'] as $name => $column) {
-            $gets[] = <<<EOF
-        \$array['$name'] = \$this->get('$name');
-EOF;
-        }
-
-        // associations
-        foreach ($this->mergeAssociations() as $name => $association) {
-            if (isset($association['mapped'])) {
-                continue;
-            }
-
-            if (in_array($association['type'], array('one_to_one', 'many_to_one'))) {
-                $gets[] = <<<EOF
-        if (\$withAssociations) {
-            \$array['$name'] = \$this->get('$name') ? \$this->get('$name')->toArray(\$withAssociations) : null;
-        }
-EOF;
-            } else {
-                $gets[] = <<<EOF
-        if (\$withAssociations) {
-            \$array['$name'] = array();
-            foreach (\$this->get('$name') as \$key => \$value) {
-                \$array['$name'][\$key] = \$value->toArray(\$withAssociations);
-            }
-        }
-EOF;
-            }
-        }
-
-        $gets = implode("\n", $gets);
-
-        // method
-        $method = new Method('public', 'toArray', '$withAssociations = true', <<<EOF
-        \$array = array();
-
-$gets
-
-        return \$array;
-EOF
-        );
-        $method->setDocComment(<<<EOF
-    /**
-     * Export the data to an array.
-     *
-     * @return array An array with the data.
-     */
-EOF
-        );
-
-        $this->definitions['entity_base']->addMethod($method);
-    }
-
-    /*
-     * Associations init collections.
-     */
-    protected function processAssociationsInitCollections()
-    {
-        $collections = array();
-        foreach ($this->mergeAssociations() as $name => $association) {
-            if (
-                'many_to_many' == $association['type']
-                ||
-                ('one_to_many' == $association['type'] && isset($association['mapped']))
-            ) {
-                $collections[] = <<<EOF
-        \$this->$name = new \Doctrine\Common\Collections\ArrayCollection();
-EOF;
-            }
-        }
-
-        $method = new Method('public', '__construct', '', implode("\n", $collections));
-        $method->setDocComment(<<<EOF
-    /**
-     * Constructor.
-     */
-EOF
-        );
-
-        $this->definitions['entity_base']->addMethod($method);
-    }
-
-    /*
      * "loadMetadata" method
      */
     protected function processLoadMetadataMethod()
@@ -783,12 +494,17 @@ EOF
     protected function mergeAssociations()
     {
         $associations = array();
-        foreach (array('one_to_one', 'one_to_many', 'many_to_one', 'many_to_many') as $type) {
+        foreach (array('oneToOne', 'oneToMany', 'manyToOne', 'manyToMany') as $type) {
             foreach ($this->configClass[$type] as $name => $association) {
                 $associations[$name] = array_merge($association, array('type' => $type));
             }
         }
 
         return $associations;
+    }
+
+    protected function configureTwig(\Twig_Environment $twig)
+    {
+        $twig->addFilter('ucfirst', new \Twig_Filter_Function('ucfirst'));
     }
 }

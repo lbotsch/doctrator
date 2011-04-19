@@ -5,6 +5,6 @@ return array(
     'doctrine_dbal_lib_dir'   => '/path/to/doctrine/dbal/lib',
     'doctrine_orm_lib_dir'    => '/path/to/doctrine/orm/lib',
     'mondator_src_dir'        => '/path/to/mondator/src',
-    'mandango_src_dir'        => '/path/to/mandango/src',
+    'twig_lib_dir'            => '/path/to/twig/lib',
     'symfony_src_dir'         => '/path/to/symfony/src',
 );

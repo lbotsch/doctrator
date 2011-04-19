@@ -23,7 +23,6 @@ namespace Doctrator\Behavior;
 
 use Mandango\Mondator\ClassExtension;
 use Mandango\Mondator\Definition\Method;
-use Mandango\Inflector;
 
 /**
  * The doctrator Hashable behavior.
@@ -64,8 +63,6 @@ class Hashable extends ClassExtension
         $column = $this->getOption('column');
 
         // event
-        $columnSetter = 'set'.Inflector::camelize($column);
-
         $method = new Method('public', 'updateHashableHash', '', <<<EOF
         do {
             \$hash = '';
@@ -77,7 +74,7 @@ class Hashable extends ClassExtension
             \$results = static::entityManager()->createQuery("SELECT e.id FROM {$this->class} e WHERE e.$column = '\$hash'")->getArrayResult();
         } while (\$results);
 
-        \$this->$columnSetter(\$hash);
+        \$this->set('$column', \$hash);
 EOF
         );
 

@@ -23,7 +23,6 @@ namespace Doctrator\Behavior;
 
 use Mandango\Mondator\ClassExtension;
 use Mandango\Mondator\Definition\Method;
-use Mandango\Inflector;
 
 /**
  * The doctrator Taggable behavior.
@@ -50,7 +49,7 @@ class Taggable extends ClassExtension
                 'parent_id' => array('type' => 'integer'),
                 'tag_id'    => array('type' => 'integer'),
             ),
-            'many_to_one' => array(
+            'manyToOne' => array(
                 'parent' => array('class' => $this->class),
                 'tag'    => array('class' => $this->class.'Tag'),
             ),

@@ -67,10 +67,10 @@ class CoreTest extends \Doctrator\Tests\TestCase
         $this->assertSame('string', $fieldMappings['source']['type']);
         $this->assertEquals(255, $fieldMappings['source']['length']);
 
-        // is_active
-        $this->assertTrue(isset($fieldMappings['is_active']));
-        $this->assertSame('boolean', $fieldMappings['is_active']['type']);
-        $this->assertTrue($metadata->getReflectionProperty('is_active')->getValue(new Article()));
+        // isActive
+        $this->assertTrue(isset($fieldMappings['isActive']));
+        $this->assertSame('boolean', $fieldMappings['isActive']['type']);
+        $this->assertTrue($metadata->getReflectionProperty('isActive')->getValue(new Article()));
 
         // score
         $this->assertTrue(isset($fieldMappings['score']));
@@ -107,11 +107,11 @@ class CoreTest extends \Doctrator\Tests\TestCase
         $metadata  = $this->metadataFactory->getMetadataFor('Model\Article');
 
         $this->assertSame(array(
-            'is_active_date' => array('columns' => array('is_active', 'date')),
+            'isActiveDate' => array('columns' => array('isActive', 'date')),
         ), $metadata->table['indexes']);
 
         $this->assertSame(array(
-            'my_slug_index' => array('columns' => array('title_slug')),
+            'mySlugIndex' => array('columns' => array('title_slug')),
         ), $metadata->table['uniqueConstraints']);
     }
 
@@ -204,7 +204,7 @@ class CoreTest extends \Doctrator\Tests\TestCase
             'slug'    => null,
             'content' => 'bar',
             'source'  => null,
-            'is_active' => true,
+            'isActive'  => true,
             'score'     => null,
             'date'      => null,
             'category'  => null,

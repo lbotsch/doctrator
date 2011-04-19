@@ -19,12 +19,11 @@
  * along with Doctrator. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Doctrator\Extension;
+namespace Doctrator\Extension\Behaviors;
 
 use Mandango\Mondator\Extension;
 use Mandango\Mondator\Definition\Method;
 use Mandango\Mondator\Definition\Property;
-use Mandango\Inflector;
 
 /**
  * The doctrator Behaviors extension.
@@ -32,7 +31,7 @@ use Mandango\Inflector;
  * @package Doctrator
  * @author  Pablo Díez Pascual <pablodip@gmail.com>
  */
-class Behaviors extends Extension
+class DoctratorBehaviorsExtension extends Extension
 {
     /**
      * @inheritdoc

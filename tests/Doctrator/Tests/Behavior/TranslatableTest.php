@@ -61,9 +61,9 @@ class TranslatableTest extends \Doctrator\Tests\TestCase
         $entity->save();
 
         $this->assertEquals(array(
-            'id'        => $entity->getId(),
-            'date'      => $entity->getDate(),
-            'is_active' => true,
+            'id'       => $entity->getId(),
+            'date'     => $entity->getDate(),
+            'isActive' => true,
             'translations' => array(
                 array(
                     'id'     => $enTranslation->getId(),

@@ -19,12 +19,11 @@
  * along with Doctrator. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Doctrator\Extension;
+namespace Doctrator\Extension\PropertyOverloading;
 
 use Mandango\Mondator\Extension;
 use Mandango\Mondator\Definition\Method;
 use Mandango\Mondator\Definition\Property;
-use Mandango\Inflector;
 
 /**
  * The doctrator PropertyOverloading extension.
@@ -32,15 +31,14 @@ use Mandango\Inflector;
  * @package Doctrator
  * @author  Pablo Díez Pascual <pablodip@gmail.com>
  */
-class PropertyOverloading extends Extension
+class DoctratorPropertyOverloadingExtension extends Extension
 {
     /**
      * @inheritdoc
      */
     protected function doClassProcess()
     {
-        $this->process__setMethod();
-        $this->process__getMethod();
+        $this->processTemplate($this->definitions['entity_base'], 'propertyOverloading.php');
     }
 
     /*

@@ -51,7 +51,7 @@ class Translatable extends ClassExtension
                 'id'     => array('id' => 'auto', 'type' => 'integer'),
                 'locale' => array('type' => 'string', 'length' => 7),
             ),
-            'many_to_one' => array(
+            'manyToOne' => array(
                 'parent' => array('class' => $this->class, 'inversed' => 'translations'),
             ),
         );
@@ -70,7 +70,7 @@ class Translatable extends ClassExtension
         $this->newConfigClasses[$this->class.'Translation'] = $translationConfigClass;
 
         // relation
-        $this->configClass['one_to_many']['translations'] = array(
+        $this->configClass['oneToMany']['translations'] = array(
             'class'  => $this->class.'Translation',
             'mapped' => 'parent',
         );
