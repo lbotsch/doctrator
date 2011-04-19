@@ -21,9 +21,9 @@
 
 namespace Doctrator\Behavior;
 
-use Mondongo\Mondator\ClassExtension;
-use Mondongo\Mondator\Definition\Method;
-use Mondongo\Inflector;
+use Mandango\Mondator\ClassExtension;
+use Mandango\Mondator\Definition\Method;
+use Mandango\Inflector;
 
 /**
  * The doctrator Ipable behavior.

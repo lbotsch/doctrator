@@ -21,10 +21,10 @@
 
 namespace Doctrator\Extension;
 
-use Mondongo\Mondator\Extension;
-use Mondongo\Mondator\Definition\Method;
-use Mondongo\Mondator\Definition\Property;
-use Mondongo\Inflector;
+use Mandango\Mondator\Extension;
+use Mandango\Mondator\Definition\Method;
+use Mandango\Mondator\Definition\Property;
+use Mandango\Inflector;
 
 /**
  * The doctrator ActiveRecord extension.

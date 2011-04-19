@@ -4,5 +4,7 @@ return array(
     'doctrine_common_lib_dir' => '/path/to/doctrine/common/lib',
     'doctrine_dbal_lib_dir'   => '/path/to/doctrine/dbal/lib',
     'doctrine_orm_lib_dir'    => '/path/to/doctrine/orm/lib',
-    'mondongo_src_dir'        => '/path/to/mondongo/src',
+    'mondator_src_dir'        => '/path/to/mondator/src',
+    'mandango_src_dir'        => '/path/to/mandango/src',
+    'symfony_src_dir'         => '/path/to/symfony/src',
 );

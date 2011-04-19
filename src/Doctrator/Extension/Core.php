@@ -21,13 +21,13 @@
 
 namespace Doctrator\Extension;
 
-use Mondongo\Mondator\Extension;
-use Mondongo\Mondator\Definition;
-use Mondongo\Mondator\Definition\Method;
-use Mondongo\Mondator\Definition\Property;
-use Mondongo\Mondator\Output;
-use Mondongo\Mondator\Dumper;
-use Mondongo\Inflector;
+use Mandango\Mondator\Extension;
+use Mandango\Mondator\Definition;
+use Mandango\Mondator\Definition\Method;
+use Mandango\Mondator\Definition\Property;
+use Mandango\Mondator\Output;
+use Mandango\Mondator\Dumper;
+use Mandango\Inflector;
 
 /**
  * The doctrator Core extension.

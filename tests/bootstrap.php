@@ -3,25 +3,26 @@
 $config = require(__DIR__.'/config.php');
 
 // autoloader
-require($config['mondongo_src_dir'].'/vendor/symfony/src/Symfony/Component/ClassLoader/UniversalClassLoader.php');
+require($config['symfony_src_dir'].'/Symfony/Component/ClassLoader/UniversalClassLoader.php');
 
 use Symfony\Component\ClassLoader\UniversalClassLoader;
 
 $loader = new UniversalClassLoader();
-$loader->registerNamespaces(array(
-    'Doctrator\\Tests' => __DIR__,
-    'Doctrator'        => __DIR__.'/../src',
-    'Doctrine\\Common' => $config['doctrine_common_lib_dir'],
-    'Doctrine\\DBAL'   => $config['doctrine_dbal_lib_dir'],
-    'Doctrine\\ORM'    => $config['doctrine_orm_lib_dir'],
-    'Model'            => __DIR__,
-    'Mondongo'         => $config['mondongo_src_dir'],
+$loader->registerNamespaces($namespaces = array(
+    'Doctrator\Tests'   => __DIR__,
+    'Doctrator'         => __DIR__.'/../src',
+    'Doctrine\Common'   => $config['doctrine_common_lib_dir'],
+    'Doctrine\DBAL'     => $config['doctrine_dbal_lib_dir'],
+    'Doctrine\ORM'      => $config['doctrine_orm_lib_dir'],
+    'Model'             => __DIR__,
+    'Mandango\Mondator' => $config['mondator_src_dir'],
+    'Mandango'          => $config['mandango_src_dir'],
 ));
 $loader->register();
 
 // mondator
-use \Mondongo\Mondator\Mondator;
-use \Mondongo\Mondator\Output\Output;
+use \Mandango\Mondator\Mondator;
+use \Mandango\Mondator\Output\Output;
 
 $configClasses = array(
     'Model\Article' => array(
